@@ -1,7 +1,7 @@
 const mysql = require('mysql');
 const Connection = require('mysql/lib/Connection');
 
-//parametros para conexão de banco
+//parametros para conexão de banco 
 const connection = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
