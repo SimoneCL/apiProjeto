@@ -3,20 +3,31 @@ module.exports = {
     buscarTodos: async (req, res) => {
 
         let json = { error: '', items: [] };
-        let tipoEvento = await TipoEventoService.buscarTodos();
-        // console.log('buscarTodos - tipoEvento',tipoEvento)
-        for (let i in tipoEvento) {
-            json.items.push({
-                code: tipoEvento[i].code,
-                descTipoEvento: tipoEvento[i].descTipoEvento
-            });
+        if(req.query.descTipoEvento) {
+            let tipoEvento = await TipoEventoService.buscarPorDescTipoEvento(req.query.descTipoEvento);
+            for (let i in tipoEvento) {
+                json.items.push({
+                    code: tipoEvento[i].code,
+                    descTipoEvento: tipoEvento[i].descTipoEvento
+                });
+            }
+            res.json(json);
+
+        } else {
+            let tipoEvento = await TipoEventoService.buscarTodos();
+            for (let i in tipoEvento) {
+                json.items.push({
+                    code: tipoEvento[i].code,
+                    descTipoEvento: tipoEvento[i].descTipoEvento
+                });
+            }
+            res.json(json);
         }
-        res.json(json);
+       
     },
 
     buscarUm: async (req, res) => {
         let json = { error: '', items: {} };
-
         let code = req.params.code;
         let tipoevento = await TipoEventoService.buscarUm(code);
         if (tipoevento) {
@@ -28,25 +39,35 @@ module.exports = {
         let json = { error: '', items: {} };
         let code = req.body.code;
         let descTipoEvento = req.body.descTipoEvento;
-
-        if (code && descTipoEvento) {
-            let codigoTipoEvento = await TipoEventoService.inserir(code, descTipoEvento);
-
-            json.items = {
-                code,
-                descTipoEvento
-            };
-
+        let tipoevento = await TipoEventoService.buscarUm(code);
+        if (tipoevento) {
+            
+            res.status(500).json( {
+                "code": "1",
+                "type": "error",
+                "message": `Código ${code} do tipo de evento já cadastrado `,
+                "detailedMessage": `Código ${code} do tipo de evento já cadastrado `
+            });
         } else {
-            console.log('res', res.error)
-            json.error = 'Campos não enviados';
+            if (code && descTipoEvento) {
+               await TipoEventoService.inserir(code, descTipoEvento);
+
+                json.items = {
+                    code,
+                    descTipoEvento
+                };
+
+            } else {
+                console.log('res', res.error)
+                json.error = 'Campos não enviados';
+            }
+            res.json(json);
         }
-        res.json(json);
+       
 
     },
 
     alterar: async (req, res) => {
-        console.log('alterar')
         let json = { error: '', items: {} };
 
         let code = req.params.code;

@@ -5,24 +5,17 @@ module.exports = {
     buscarTodos: () => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('SELECT * FROM tipoEventos', (error, items) => {
+            db.query('SELECT * FROM evento', (error, items) => {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });
         });
     },
-    buscarPorDescTipoEvento: (descTipoEvento) => {
-        return new Promise((aceito, rejeitado) => {
-            db.query(`SELECT * FROM tipoEventos WHERE descTipoEvento like '%${descTipoEvento}%'`, (error, items) => {
-                if (error) { rejeitado(error); return; }
-                aceito(items);
-            });
-        });
-    },
-    buscarUm: (code) => {
+
+    buscarUm: (user) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('SELECT * FROM tipoEventos WHERE code = ?', [code], (error, items) => {
+            db.query('SELECT * FROM evento WHERE user = ?', [user], (error, items) => {
                 if (error) { rejeitado(error); return; }
                 if (items.length > 0) {
                     aceito(items[0]);
@@ -33,25 +26,29 @@ module.exports = {
         });
 
     },
-
-    inserir: (code, descTipoEvento) => {
+    // id: number;
+    // user: string;
+    // eventIniDate: string;
+    // eventEndDate: string;
+    // type: number | string;
+    inserir: (user,  eventIniDate, eventEndDate, type) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('INSERT INTO tipoEventos (code, descTipoEvento) VALUES (?,?)', 
-                [code,descTipoEvento],    
+            db.query('INSERT INTO evento (user,  eventIniDate, eventEndDate, type) VALUES (?,?,?,?)', 
+                [user,  eventIniDate, eventEndDate, type],    
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
-                    aceito(items.insertcode);
+                    aceito(items.insertdata);
                 }
             );
         });
     },
 
-    alterar: (code ,descTipoEvento) => {
+    alterar: (user,  eventIniDate, eventEndDate, type) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('UPDATE tipoEventos SET descTipoEvento = ? WHERE code = ?', 
-                [descTipoEvento, code],    
+            db.query('UPDATE evento SET eventIniDate = ? , eventEndDate = ? , type = ? WHERE user = ?', 
+                [eventIniDate, eventEndDate, type,user],    
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
                     aceito(items);
@@ -60,11 +57,11 @@ module.exports = {
         });
     },
 
-    excluir: (code) => {
+    excluir: (user) => {
 
         return new Promise((aceito, rejeitado) => {
 
-            db.query('DELETE FROM tipoEventos WHERE code = ?',[code], (error, items) => {
+            db.query('DELETE FROM evento WHERE user = ?',[user], (error, items) => {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });
