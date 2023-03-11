@@ -19,10 +19,10 @@ module.exports = {
             });
         });
     },
-    buscarUm: (code) => {
+    buscarUm: (codTipo) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('SELECT * FROM tipoEventos WHERE code = ?', [code], (error, items) => {
+            db.query('SELECT * FROM tipoEventos WHERE codTipo = ?', [codTipo], (error, items) => {
                 if (error) { rejeitado(error); return; }
                 if (items.length > 0) {
                     aceito(items[0]);
@@ -34,24 +34,24 @@ module.exports = {
 
     },
 
-    inserir: (code, descTipoEvento) => {
+    inserir: (codTipo, descTipoEvento) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('INSERT INTO tipoEventos (code, descTipoEvento) VALUES (?,?)', 
-                [code,descTipoEvento],    
+            db.query('INSERT INTO tipoEventos (codTipo, descTipoEvento) VALUES (?,?)', 
+                [codTipo,descTipoEvento],    
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
-                    aceito(items.insertcode);
+                    aceito(items.insertcodTipo);
                 }
             );
         });
     },
 
-    alterar: (code ,descTipoEvento) => {
+    alterar: (codTipo ,descTipoEvento) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('UPDATE tipoEventos SET descTipoEvento = ? WHERE code = ?', 
-                [descTipoEvento, code],    
+            db.query('UPDATE tipoEventos SET descTipoEvento = ? WHERE codTipo = ?', 
+                [descTipoEvento, codTipo],    
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
                     aceito(items);
@@ -60,11 +60,11 @@ module.exports = {
         });
     },
 
-    excluir: (code) => {
+    excluir: (codTipo) => {
 
         return new Promise((aceito, rejeitado) => {
 
-            db.query('DELETE FROM tipoEventos WHERE code = ?',[code], (error, items) => {
+            db.query('DELETE FROM tipoEventos WHERE codTipo = ?',[codTipo], (error, items) => {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });
