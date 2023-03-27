@@ -29,6 +29,13 @@ router.post('/evento', EventoController.inserir);
 router.put('/evento/:user', EventoController.alterar);
 // router.delete('/evento/:user', EventoController.excluir); ainda não está pronto
 
+const UsuarioController = require('./controllers/UsuarioController');
+router.get('/usuario',UsuarioController.buscarTodos);
+router.get('/usuario/:idUsuario',UsuarioController.buscarUm);
+router.post('/usuario', UsuarioController.inserir);
+router.put('/usuario/:idUsuario', UsuarioController.alterar);
+router.delete('/usuario/:idUsuario', UsuarioController.excluir);
+
 
 
 module.exports = router;
