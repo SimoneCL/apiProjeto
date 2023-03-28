@@ -19,16 +19,27 @@ const FeriadosController = require('./controllers/FeriadosController');
 router.get('/feriados',FeriadosController.buscarTodos);
 router.get('/feriados/:data',FeriadosController.buscarUm);
 router.post('/feriados', FeriadosController.inserir);
-router.put('/feriados/:data', FeriadosController.alterar);
-router.delete('/feriados/:data', FeriadosController.excluir);
+router.put('/feriados/:idFeriado', FeriadosController.alterar);
+router.delete('/feriados/:idFeriado', FeriadosController.excluir);
 
 const EventoController = require('./controllers/EventoController');
 router.get('/evento',EventoController.buscarTodos);
-router.get('/evento/:user',EventoController.buscarUm);
+router.get('/evento/:idUsuario',EventoController.buscarUm);
 router.post('/evento', EventoController.inserir);
-router.put('/evento/:user', EventoController.alterar);
+router.put('/evento/:idUsuario', EventoController.alterar);
 // router.delete('/evento/:user', EventoController.excluir); ainda não está pronto
 
+const UsuarioController = require('./controllers/UsuarioController');
+router.get('/usuario',UsuarioController.buscarTodos);
+router.get('/usuario/:idUsuario',UsuarioController.buscarUm);
+router.post('/usuario', UsuarioController.inserir);
+router.put('/usuario/:idUsuario', UsuarioController.alterar);
+router.delete('/usuario/:idUsuario', UsuarioController.excluir);
+module.exports = router;
 
-
+const EquipeUsuarioController = require('./controllers/EquipeUsuarioController');
+router.get('/equipeUsuario',EquipeUsuarioController.buscarTodos);
+router.get('/equipeUsuario/:id',EquipeUsuarioController.buscarUm);
+router.post('/equipeUsuario', EquipeUsuarioController.inserir);
+router.delete('/equipeUsuario/:id', EquipeUsuarioController.excluir);
 module.exports = router;
