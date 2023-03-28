@@ -12,10 +12,10 @@ module.exports = {
         });
     },
 
-    buscarUm: (user) => {
+    buscarUm: (idUsuario) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('SELECT * FROM evento WHERE user = ?', [user], (error, items) => {
+            db.query('SELECT * FROM evento WHERE idUsuario = ?', [idUsuario], (error, items) => {
                 if (error) { rejeitado(error); return; }
                 if (items.length > 0) {
                     aceito(items[0]);
@@ -27,15 +27,15 @@ module.exports = {
 
     },
     // id: number;
-    // user: string;
-    // eventIniDate: string;
-    // eventEndDate: string;
-    // type: number | string;
-    inserir: (user,  eventIniDate, eventEndDate, type) => {
+    // idUsuario: string;
+    // dataEventoIni: string;
+    // dataEventoFim: string;
+    // codTipo: number | string;
+    inserir: (idUsuario,  dataEventoIni, dataEventoFim, codTipo) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('INSERT INTO evento (user,  eventIniDate, eventEndDate, type) VALUES (?,?,?,?)', 
-                [user,  eventIniDate, eventEndDate, type],    
+            db.query('INSERT INTO evento (idUsuario,  dataEventoIni, dataEventoFim, codTipo) VALUES (?,?,?,?)', 
+                [idUsuario,  dataEventoIni, dataEventoFim, codTipo],    
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
                     aceito(items.insertdata);
@@ -44,11 +44,11 @@ module.exports = {
         });
     },
 
-    alterar: (user,  eventIniDate, eventEndDate, type) => {
+    alterar: (idUsuario,  dataEventoIni, dataEventoFim, codTipo) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('UPDATE evento SET eventIniDate = ? , eventEndDate = ? , type = ? WHERE user = ?', 
-                [eventIniDate, eventEndDate, type,user],    
+            db.query('UPDATE evento SET dataEventoIni = ? , dataEventoFim = ? , codTipo = ? WHERE idUsuario = ?', 
+                [dataEventoIni, dataEventoFim, codTipo,idUsuario],    
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
                     aceito(items);
@@ -57,11 +57,11 @@ module.exports = {
         });
     },
 
-    excluir: (user) => {
+    excluir: (idUsuario) => {
 
         return new Promise((aceito, rejeitado) => {
 
-            db.query('DELETE FROM evento WHERE user = ?',[user], (error, items) => {
+            db.query('DELETE FROM evento WHERE idUsuario = ?',[idUsuario], (error, items) => {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });

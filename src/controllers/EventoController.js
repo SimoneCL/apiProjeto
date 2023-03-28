@@ -6,10 +6,10 @@ module.exports = {
         let evento = await EventoService.buscarTodos();
         for (let i in evento) {
             json.items.push({
-                user: evento[i].user,
-                eventIniDate: evento[i].eventIniDate,
-                eventEndDate: evento[i].eventEndDate,
-                type: evento[i].type
+                idUsuario: evento[i].idUsuario,
+                dataEventoIni: evento[i].dataEventoIni,
+                dataEventoFim: evento[i].dataEventoFim,
+                codTipo: evento[i].codTipo
 
             });
         }
@@ -18,28 +18,28 @@ module.exports = {
 
     buscarUm: async (req, res) => {
         let json = { error: '', items: {} };
-        let user = req.params.user;
-        let evento = await EventoService.buscarUm(user);
+        let idUsuario = req.params.idUsuario;
+        let evento = await EventoService.buscarUm(idUsuario);
         if (evento) {
-            json.items = evento;
+            json = evento;
         }
         res.json(json);
     },
     inserir: async (req, res) => {
         let json = { error: '', items: {} };
-        let user = req.body.user;
-        let eventIniDate = req.body.eventIniDate;
-        let eventEndDate = req.body.eventEndDate;
-        let type = req.body.type;
-
-        if (user && eventIniDate && eventEndDate && type) {
-            await EventoService.inserir(user, eventIniDate, eventEndDate, type);
+        let idUsuario = req.body.idUsuario;
+        let dataEventoIni = req.body.dataEventoIni;
+        let dataEventoFim = req.body.dataEventoFim;
+        let codTipo = req.body.codTipo;
+console.log('inserir - idUsuario', idUsuario, 'dataEventoIni', dataEventoIni, 'dataEventoFim', dataEventoFim ,'codTipo', codTipo)
+        if (idUsuario && dataEventoIni && dataEventoFim && codTipo) {
+            await EventoService.inserir(idUsuario, dataEventoIni, dataEventoFim, codTipo);
 
             json.items = {
-                user,
-                eventIniDate,
-                eventEndDate,
-                type
+                idUsuario,
+                dataEventoIni,
+                dataEventoFim,
+                codTipo
             };
 
         } else {
@@ -54,17 +54,17 @@ module.exports = {
     alterar: async (req, res) => {
         let json = { error: '', items: {} };
 
-        let user = req.params.user;
-        let eventIniDate = req.body.eventIniDate;
-        let eventEndDate = req.body.eventEndDate;
-        let type = req.body.type;
-        if (user && eventIniDate && eventEndDate && type) {
-            await EventoService.alterar(user, eventIniDate, eventEndDate, type);
+        let idUsuario = req.params.idUsuario;
+        let dataEventoIni = req.body.dataEventoIni;
+        let dataEventoFim = req.body.dataEventoFim;
+        let codTipo = req.body.codTipo;
+        if (idUsuario && dataEventoIni && dataEventoFim && codTipo) {
+            await EventoService.alterar(idUsuario, dataEventoIni, dataEventoFim, codTipo);
             json.items = {
-                user,
-                eventIniDate,
-                eventEndDate,
-                type
+                idUsuario,
+                dataEventoIni,
+                dataEventoFim,
+                codTipo
             };
         } else {
             json.error = 'Campos não enviados';
@@ -75,7 +75,7 @@ module.exports = {
     excluir: async (req, res) => {
         let json = { error: '', items: {} };
 
-        await EventoService.excluir(req.params.user);
+        await EventoService.excluir(req.params.idUsuario);
 
         res.json(json);
     }

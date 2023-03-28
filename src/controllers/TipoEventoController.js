@@ -39,8 +39,9 @@ module.exports = {
         let json = { error: '', items: {} };
         let codTipo = req.body.codTipo;
         let descTipoEvento = req.body.descTipoEvento;
-        let tipoevento = await TipoEventoService.buscarUm(codTipo);
-        if (tipoevento) {
+        let tipoevento = await TipoEventoService.buscarUm(codTipo); 
+      
+        if (tipoevento != false ) {
 
             res.status(500).json({
                 "codTipo": "1",
@@ -50,7 +51,7 @@ module.exports = {
             });
         } else {
             let tipoEvento = await TipoEventoService.buscarPorDescTipoEvento(descTipoEvento);
-            if (tipoEvento) {
+            if (tipoEvento != false) {
                 for (const i in tipoEvento) {
                     codTipo = tipoEvento[i].codTipo;
                 }

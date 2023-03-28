@@ -19,6 +19,14 @@ module.exports = {
             });
         });
     },
+    buscarDescricaoFeriado: (descricao) => {
+        return new Promise((aceito, rejeitado) => {
+            db.query('SELECT * FROM feriados WHERE descricao = ?', [descricao], (error, items) => {
+                if (error) { rejeitado(error); return; }
+                aceito(items);
+            });
+        });
+    },
 
     buscarUm: (data) => {
         return new Promise((aceito, rejeitado) => {
@@ -36,6 +44,7 @@ module.exports = {
     },
 
     inserir: (data, descricao, tipoFeriado, pontoFacultativo) => {
+     
         return new Promise((aceito, rejeitado) => {
 
             db.query('INSERT INTO feriados (data,  descricao, tipoFeriado, pontoFacultativo) VALUES (?,?,?,?)',
@@ -48,11 +57,11 @@ module.exports = {
         });
     },
 
-    alterar: (data, descricao, tipoFeriado, pontoFacultativo) => {
+    alterar: (idFeriado, data, descricao, tipoFeriado, pontoFacultativo) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('UPDATE feriados SET descricao = ? , tipoFeriado = ? , pontoFacultativo = ? WHERE data = ?',
-                [descricao, tipoFeriado, pontoFacultativo, data],
+            db.query('UPDATE feriados SET descricao = ? , tipoFeriado = ? , pontoFacultativo = ?, data = ? WHERE idFeriado = ?',
+                [descricao, tipoFeriado, pontoFacultativo, data, idFeriado],
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
                     aceito(items);
@@ -61,11 +70,11 @@ module.exports = {
         });
     },
 
-    excluir: (data) => {
+    excluir: (idFeriado) => {
 
         return new Promise((aceito, rejeitado) => {
 
-            db.query('DELETE FROM feriados WHERE data = ?', [data], (error, items) => {
+            db.query('DELETE FROM feriados WHERE idFeriado = ?', [idFeriado], (error, items) => {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });
