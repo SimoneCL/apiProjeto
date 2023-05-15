@@ -72,7 +72,6 @@ module.exports = {
                     };
 
                 } else {
-                    console.log('res', res.error)
                     json.error = 'Campos não enviados';
                 }
                 res.json(json);

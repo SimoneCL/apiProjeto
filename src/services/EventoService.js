@@ -11,11 +11,11 @@ module.exports = {
             });
         });
     },
-
-    buscarUm: (idUsuario) => {
+   
+    buscarUm: (idEvento) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('SELECT * FROM evento WHERE idUsuario = ?', [idUsuario], (error, items) => {
+            db.query('SELECT * FROM evento WHERE idEvento = ?', [idEvento], (error, items) => {
                 if (error) { rejeitado(error); return; }
                 if (items.length > 0) {
                     aceito(items[0]);
@@ -25,6 +25,36 @@ module.exports = {
             });
         });
 
+    },
+    buscarEventosEquipeUsuario:(codEquipe, dataEventoIni, dataEventoFim) => {
+        
+        return new Promise((aceito, rejeitado) => {
+             db.query(  `select usuario.idUsuario,usuario.nomeUsuario,equipeUsuario.codEquipe, equipes.descEquipe, evento.dataEventoIni,evento.dataEventoFim,tipoEventos.codTipo, tipoEventos.descTipoEvento 
+                        from equipeUsuario 
+                        LEFT join evento
+                        on evento.idUsuario = equipeusuario.idUsuario
+                        and (    evento.dataEventoIni between ('${dataEventoIni}') and ('${dataEventoFim}')
+                        or  evento.dataEventoFim between ('${dataEventoIni}') and ('${dataEventoFim}')	)
+                        INNER join equipes
+                        on equipes.codEquipe =  equipeusuario.codEquipe
+                        and equipes.codEquipe in (${codEquipe})
+                        INNER join usuario
+                        on usuario.idUsuario = equipeusuario.idUsuario
+                        LEFT join tipoEventos
+                        on tipoEventos.codTipo = evento.codTipo`            
+                    , (error, items) => {
+                 if (error) { rejeitado(error); return; }
+                 aceito(items);
+             });
+         });
+    },
+    buscarPorIdUsuario:(idUsuario) => {
+       return new Promise((aceito, rejeitado) => {
+            db.query(`SELECT * FROM evento WHERE idUsuario in (${idUsuario})`, (error, items) => {
+                if (error) { rejeitado(error); return; }
+                aceito(items);
+            });
+        });
     },
     // id: number;
     // idUsuario: string;
@@ -57,11 +87,11 @@ module.exports = {
         });
     },
 
-    excluir: (idUsuario) => {
+    excluir: (idEvento, idUsuario) => {
 
         return new Promise((aceito, rejeitado) => {
 
-            db.query('DELETE FROM evento WHERE idUsuario = ?',[idUsuario], (error, items) => {
+            db.query('DELETE FROM evento WHERE idEvento = ? AND idUsuario = ?',[idEvento,idUsuario], (error, items) => {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });
