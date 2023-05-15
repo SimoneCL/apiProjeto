@@ -12,23 +12,27 @@ module.exports = {
         });
     },
     buscarEquipesUsuario: (idUsuario) => {
-        console.log(idUsuario)
         return new Promise((aceito, rejeitado) => {
 
             db.query('SELECT * FROM equipeUsuario WHERE idUsuario = ?', [idUsuario], (error, items) => {
                 if (error) { rejeitado(error); return; }
-
-                if (items.length > 0) {
-                    aceito(items[0]);
-                } else {
-                    aceito(false);
-                }
+                aceito(items);
+              
             });
         });
 
     },
+    buscarUsuarioEquipe: (codEquipe) => {
+        return new Promise((aceito, rejeitado) => {
+            db.query(`SELECT * FROM equipeUsuario WHERE codEquipe in (${codEquipe})`, (error, items) => {
+                if (error) { rejeitado(error); return; }
+                aceito(items);
+            });
+        });
+
+    },
+
     buscarCodEquipe: (codEquipe) => {
-        console.log(codEquipe)
         return new Promise((aceito, rejeitado) => {
 
             db.query('SELECT * FROM equipeUsuario WHERE codEquipe = ?', [codEquipe], (error, items) => {
@@ -43,15 +47,13 @@ module.exports = {
         });
 
     },
-    
-    inserir: (idUsuario,  codEquipe) => {
-        console.log('service inserir', idUsuario, codEquipe)
+
+    inserir: (idUsuario, codEquipe) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('INSERT INTO equipeUsuario (idUsuario,  codEquipe) VALUES (?,?)', 
-                [idUsuario,  codEquipe],    
+            db.query('INSERT INTO equipeUsuario (idUsuario,  codEquipe) VALUES (?,?)',
+                [idUsuario, codEquipe],
                 (error, items) => {
-                    console.log('insert', items.insertdata)
                     if (error) { rejeitado(error); return; }
                     aceito(items.insertdata);
                 }
@@ -59,13 +61,12 @@ module.exports = {
         });
     },
 
-   
 
-    excluir: (idUsuario,codEquipe) => {
-        console.log('service', idUsuario, codEquipe);
+
+    excluir: (idUsuario, codEquipe) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('DELETE FROM equipeUsuario WHERE idUsuario = ? and codEquipe = ?',[idUsuario,codEquipe], (error, items) => {
+            db.query('DELETE FROM equipeUsuario WHERE idUsuario = ? and codEquipe = ?', [idUsuario, codEquipe], (error, items) => {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });

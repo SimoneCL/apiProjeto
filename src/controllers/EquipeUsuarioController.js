@@ -1,11 +1,10 @@
 const EquipeUsuarioService = require('../services/EquipeUsuarioService');
 module.exports = {
     buscarTodos: async (req, res) => {
-        let json = { error: '', items: [] };
-
-        if (req.query.usuario) {
-            let equipeUsuario = await EquipeUsuarioService.buscarEquipeUsuario(req.query.usuario);
-            for (let i in usuario) {
+        let json = { error: '', items: []};
+        if (req.query.idUsuario) {
+            let equipeUsuario = await EquipeUsuarioService.buscarEquipesUsuario(req.query.idUsuario);
+            for (let i in equipeUsuario) {
                 json.items.push({
                     idUsuario: equipeUsuario[i].idUsuario,
                     codEquipe: equipeUsuario[i].codEquipe
@@ -23,11 +22,21 @@ module.exports = {
             res.json(json);
         }
     },
-
+    buscarUsuarioEquipe: async (req, res) => {
+        
+        let json = { error: '', items: [] };
+        let equipeUsuario = await EquipeUsuarioService.buscarUsuarioEquipe(req.query.codEquipe);
+        for (let i in equipeUsuario) {
+            json.items.push({
+                idUsuario: equipeUsuario[i].idUsuario,
+                codEquipe: equipeUsuario[i].codEquipe
+            });
+        }
+        res.json(json);
+    },
     buscarUm: async (req, res) => {
-        let json = {} ; // { error: '', items: {} };
+        let json =  { error: '', items: {} };
         let idUsuario = req.params.id;
-        console.log('buscarUm - idUsuario',idUsuario)
         let equipeUsuario = await EquipeUsuarioService.buscarEquipesUsuario(idUsuario);
         if (equipeUsuario) {
             json = equipeUsuario;
@@ -38,8 +47,6 @@ module.exports = {
         let json = { error: '', items: {} };
         let idUsuario = req.body.idUsuario;
         let codEquipe = req.body.codEquipe;
-        let equipeUsuario = await EquipeUsuarioService.buscarCodEquipe(codEquipe); 
-        console.log('inserir', equipeUsuario)
         if (idUsuario && codEquipe) {
             await EquipeUsuarioService.inserir(idUsuario, codEquipe);
 
@@ -48,7 +55,6 @@ module.exports = {
             };
          
         } else {
-            console.log('res', res.error)
             json.error = 'Campos não enviados';
         }
         res.json(json);
@@ -61,7 +67,6 @@ module.exports = {
         
         let idUsuario = req.params.id.split(";")[0];
         let codEquipe = req.params.id.split(";")[1];
-
         await EquipeUsuarioService.excluir(idUsuario,codEquipe);
 
         res.json(json);
