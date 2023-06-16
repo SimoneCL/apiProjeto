@@ -36,7 +36,7 @@ router.get('/usuario/:idUsuario',UsuarioController.buscarUm);
 router.post('/usuario', UsuarioController.inserir);
 router.put('/usuario/:idUsuario', UsuarioController.alterar);
 router.delete('/usuario/:idUsuario', UsuarioController.excluir);
-module.exports = router;
+//module.exports = router;
 
 const EquipeUsuarioController = require('./controllers/EquipeUsuarioController');
 router.get('/equipeUsuario',EquipeUsuarioController.buscarTodos);
@@ -44,4 +44,16 @@ router.get('/equipeUsuario/byEquipe',EquipeUsuarioController.buscarUsuarioEquipe
 router.get('/equipeUsuario/:id',EquipeUsuarioController.buscarUm);
 router.post('/equipeUsuario', EquipeUsuarioController.inserir);
 router.delete('/equipeUsuario/:id', EquipeUsuarioController.excluir);
+
+const tipoPerfilUsuarioController = require('./controllers/tipoPerfilUsuarioController');
+router.get('/tipoPerfilUsuario',tipoPerfilUsuarioController.buscarTodos);
+router.get('/tipoPerfilUsuario/edit/:id',tipoPerfilUsuarioController.buscarUm);
+router.post('/tipoPerfilUsuario', tipoPerfilUsuarioController.inserir);
+router.put('/tipoPerfilUsuario/edit/:id', tipoPerfilUsuarioController.alterar);
+router.delete('/tipoPerfilUsuario/:id', tipoPerfilUsuarioController.excluir);
+
+const LoginController = require('./controllers/LoginController');
+router.get('/login',LoginController.buscarTodos);
+router.get('/login/:user', LoginController.buscarUm);
+
 module.exports = router;
