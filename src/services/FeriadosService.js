@@ -5,7 +5,16 @@ module.exports = {
     buscarTodos: () => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('SELECT * FROM feriados', (error, items) => {
+            db.query('SELECT * FROM feriados ORDER BY data', (error, items) => {
+                if (error) { rejeitado(error); return; }
+                aceito(items);
+            });
+        });
+    },
+    buscarAvancada: (dataInicial, dataFinal) => {
+        return new Promise((aceito, rejeitado) => {
+            
+            db.query(`SELECT * FROM feriados WHERE data between ('${dataInicial}') and ('${dataFinal}') ORDER BY data`, (error, items) => {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });
@@ -44,16 +53,24 @@ module.exports = {
     },
 
     inserir: (data, descricao, tipoFeriado, pontoFacultativo) => {
-     
+
         return new Promise((aceito, rejeitado) => {
 
-            db.query('INSERT INTO feriados (data,  descricao, tipoFeriado, pontoFacultativo) VALUES (?,?,?,?)',
-                [data, descricao, tipoFeriado, pontoFacultativo],
-                (error, items) => {
-                    if (error) { rejeitado(error); return; }
-                    aceito(items.insertdata);
+            db.query('SELECT * FROM feriados WHERE data = ?', [data], (error, items) => {
+
+                if (error) { rejeitado(error); return; }
+                if (items.length > 0) {
+                    aceito(items[0]);
+                } else {
+                    db.query('INSERT INTO feriados (data,  descricao, tipoFeriado, pontoFacultativo) VALUES (?,?,?,?)',
+                        [data, descricao, tipoFeriado, pontoFacultativo],
+                        (error, items) => {
+                            if (error) { rejeitado(error); return; }
+                            aceito(items.insertdata);
+                        });
                 }
-            );
+            });
+
         });
     },
 

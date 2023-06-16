@@ -19,6 +19,7 @@ const FeriadosController = require('./controllers/FeriadosController');
 router.get('/feriados',FeriadosController.buscarTodos);
 router.get('/feriados/:data',FeriadosController.buscarUm);
 router.post('/feriados', FeriadosController.inserir);
+router.post('/feriadosNacionais', FeriadosController.inserirNacionais);
 router.put('/feriados/:idFeriado', FeriadosController.alterar);
 router.delete('/feriados/:idFeriado', FeriadosController.excluir);
 
