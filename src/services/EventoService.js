@@ -5,7 +5,7 @@ module.exports = {
     buscarTodos: () => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('SELECT * FROM evento', (error, items) => {
+            db.query('SELECT * FROM evento ORDER BY dataEventoIni', (error, items) => {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });
@@ -50,17 +50,13 @@ module.exports = {
     },
     buscarPorIdUsuario:(idUsuario) => {
        return new Promise((aceito, rejeitado) => {
-            db.query(`SELECT * FROM evento WHERE idUsuario in (${idUsuario})`, (error, items) => {
+            db.query(`SELECT * FROM evento WHERE idUsuario in (${idUsuario}) ORDER BY dataEventoIni`, (error, items) => {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });
         });
     },
-    // id: number;
-    // idUsuario: string;
-    // dataEventoIni: string;
-    // dataEventoFim: string;
-    // codTipo: number | string;
+    
     inserir: (idUsuario,  dataEventoIni, dataEventoFim, codTipo) => {
         return new Promise((aceito, rejeitado) => {
 
