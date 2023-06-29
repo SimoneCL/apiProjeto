@@ -1,4 +1,5 @@
 const EventoService = require('../services/EventoService');
+const TipoEventoService = require('../services/TipoEventoService');
 module.exports = {
     buscarTodos: async (req, res) => {
         let json = { error: '', items: [] };
@@ -20,8 +21,25 @@ module.exports = {
             }
         } else {
             if (req.query.idUsuario) {
-                let idUsuario = req.query.idUsuario;
-                let evento = await EventoService.buscarPorIdUsuario(idUsuario);
+                let descricao = req.query.descricao;
+                let codTipo = '';
+                if (req.query.codTipo === undefined){
+                    
+                    let tipoEvento = await TipoEventoService.buscarTodos(); 
+                    for (let i in tipoEvento) {
+                       if (codTipo === '') {
+                        codTipo = tipoEvento[i].codTipo ;
+                       } else {
+                        codTipo = codTipo + ',' + tipoEvento[i].codTipo ;
+                       }
+                    }
+                   
+                } else {
+                    codTipo = req.query.codTipo.toString();
+                }
+
+                
+                let evento = await EventoService.buscarPorIdUsuario(req.query.idUsuario, req.query.dataInicial, req.query.dataFinal, descricao, codTipo);
                 if (evento) {
                     for (let i in evento) {
                         json.items.push({
@@ -30,8 +48,12 @@ module.exports = {
                             dataEventoIni: evento[i].dataEventoIni,
                             dataEventoFim: evento[i].dataEventoFim,
                             codTipo: evento[i].codTipo,
+                            descricao: evento[i].descricao
+
+
                         });
                     }
+                    //usuario.idUsuario,usuario.nomeUsuario, evento.dataEventoIni,evento.dataEventoFim, ifnull(feriados.descricao,tipoEventos.descTipoEvento),tipoEventos.codTipo, tipoEventos.descTipoEvento
                 }
 
             } else {
