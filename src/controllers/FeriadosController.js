@@ -4,7 +4,6 @@ const EventoService = require('../services/EventoService');
 module.exports = {
     buscarTodos: async (req, res) => {
         let json = { error: '', items: [] };
-        console.log('req.query', req.query)
         if (req.query.descricao) {
             let feriado = await FeriadosService.buscarPorDescricao(req.query.descricao);
             for (let i in feriado) {
@@ -19,6 +18,7 @@ module.exports = {
             }
             res.json(json);
         } else {
+            
             if(req.query.dataInicial && req.query.dataFinal){
                 let feriado = await FeriadosService.buscarAvancada(req.query.dataInicial ,req.query.dataFinal);
                 for (let i in feriado) {
@@ -59,7 +59,6 @@ module.exports = {
         res.json(json);
     },
     inserirNacionais: async (req, res) => {
-        console.log('inserirNacionais')
         let json = { error: '', items: {} };
         let usuario = await UsuarioService.buscarTodos();
         let feriado = req.body;
@@ -86,7 +85,6 @@ module.exports = {
         let pontoFacultativo = req.body.pontoFacultativo;
         let feriado = await FeriadosService.buscarUm(data);
         
-        console.log('inserir')
         if (feriado) {
 
             res.status(500).json({

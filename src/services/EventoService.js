@@ -11,7 +11,7 @@ module.exports = {
             });
         });
     },
-   
+
     buscarUm: (idEvento) => {
         return new Promise((aceito, rejeitado) => {
 
@@ -26,10 +26,10 @@ module.exports = {
         });
 
     },
-    buscarEventosEquipeUsuario:(codEquipe, dataEventoIni, dataEventoFim) => {
-        
+    buscarEventosEquipeUsuario: (codEquipe, dataEventoIni, dataEventoFim) => {
+
         return new Promise((aceito, rejeitado) => {
-             db.query(  `select usuario.idUsuario,usuario.nomeUsuario,equipeUsuario.codEquipe, equipes.descEquipe, evento.dataEventoIni,evento.dataEventoFim,tipoEventos.codTipo, tipoEventos.descTipoEvento 
+            db.query(`select usuario.idUsuario,usuario.nomeUsuario,equipeUsuario.codEquipe, equipes.descEquipe, evento.dataEventoIni,evento.dataEventoFim,tipoEventos.codTipo, tipoEventos.descTipoEvento 
                         from equipeUsuario 
                         LEFT join evento
                         on evento.idUsuario = equipeusuario.idUsuario
@@ -41,27 +41,108 @@ module.exports = {
                         INNER join usuario
                         on usuario.idUsuario = equipeusuario.idUsuario
                         LEFT join tipoEventos
-                        on tipoEventos.codTipo = evento.codTipo`            
-                    , (error, items) => {
-                 if (error) { rejeitado(error); return; }
-                 aceito(items);
-             });
-         });
-    },
-    buscarPorIdUsuario:(idUsuario) => {
-       return new Promise((aceito, rejeitado) => {
-            db.query(`SELECT * FROM evento WHERE idUsuario in (${idUsuario}) ORDER BY dataEventoIni`, (error, items) => {
-                if (error) { rejeitado(error); return; }
-                aceito(items);
-            });
+                        on tipoEventos.codTipo = evento.codTipo
+                        order by evento.dataEventoIni`
+                , (error, items) => {
+                    if (error) { rejeitado(error); return; }
+                    aceito(items);
+                });
         });
     },
-    
-    inserir: (idUsuario,  dataEventoIni, dataEventoFim, codTipo) => {
+    buscarPorIdUsuario: (idUsuario, dataInicial, dataFinal,descricao, codTipo) => {
+        if (descricao === undefined) {
+            descricao = '';
+        } 
+        
+        return new Promise((aceito, rejeitado) => {
+            if (dataInicial && dataFinal) {
+                db.query(`select usuario.idUsuario,usuario.nomeUsuario, evento.dataEventoIni,evento.dataEventoFim, ifnull(feriados.descricao,tipoEventos.descTipoEvento) descricao,tipoEventos.codTipo, tipoEventos.descTipoEvento 
+                            from usuario
+                            INNER join evento
+                            on evento.idUsuario =  usuario.idUsuario
+                            and evento.dataEventoIni between ('${dataInicial}') and ('${dataFinal}')
+                            and  evento.dataEventoFim between ('${dataInicial}') and ('${dataFinal}')
+                            and  evento.codTipo in (${codTipo})
+                            LEFT join feriados
+                            on feriados.data between evento.dataEventoIni and evento.dataEventoFim
+                            LEFT join tipoEventos
+                            on tipoEventos.codTipo = evento.codTipo
+                            where usuario.idUsuario = ${idUsuario}
+                            and ifnull(feriados.descricao,tipoEventos.descTipoEvento) like '%${descricao}%'
+                            order by evento.dataEventoIni`
+                    , (error, items) => {
+                        if (error) { rejeitado(error); return; }
+                        aceito(items);
+                    });
+            } else {
+                if (dataInicial) {
+                    db.query(`select usuario.idUsuario,usuario.nomeUsuario, evento.dataEventoIni,evento.dataEventoFim, ifnull(feriados.descricao,tipoEventos.descTipoEvento) descricao,tipoEventos.codTipo, tipoEventos.descTipoEvento 
+                                from usuario
+                                INNER join evento
+                                on evento.idUsuario =  usuario.idUsuario
+                                and evento.dataEventoIni >= ('${dataInicial}')
+                                and  evento.codTipo in (${codTipo})
+                                LEFT join feriados
+                                on feriados.data between evento.dataEventoIni and evento.dataEventoFim
+                                LEFT join tipoEventos
+                                on tipoEventos.codTipo = evento.codTipo
+                                where usuario.idUsuario = ${idUsuario}
+                                and ifnull(feriados.descricao,tipoEventos.descTipoEvento) like '%${descricao}%'
+                                order by evento.dataEventoIni`
+                        , (error, items) => {
+                            if (error) { rejeitado(error); return; }
+                            aceito(items);
+                        });
+                } else {
+                    
+                    if (dataFinal) {
+                        db.query(`select usuario.idUsuario,usuario.nomeUsuario, evento.dataEventoIni,evento.dataEventoFim, ifnull(feriados.descricao,tipoEventos.descTipoEvento) descricao,tipoEventos.codTipo, tipoEventos.descTipoEvento 
+                                    from usuario
+                                    INNER join evento
+                                    on evento.idUsuario =  usuario.idUsuario
+                                    and  evento.codTipo in (${codTipo})
+                                    and evento.dataEventoIni <= ('${dataFinal}')
+                                
+                                    LEFT join feriados
+                                    on feriados.data between evento.dataEventoIni and evento.dataEventoFim
+                                    LEFT join tipoEventos
+                                    on tipoEventos.codTipo = evento.codTipo
+                                    where usuario.idUsuario = ${idUsuario}
+                                    and ifnull(feriados.descricao,tipoEventos.descTipoEvento) like '%${descricao}%'
+                                    order by evento.dataEventoIni`
+                            , (error, items) => {
+                                if (error) { rejeitado(error); return; }
+                                aceito(items);
+                            });
+                    } else {
+                        db.query(`select usuario.idUsuario,usuario.nomeUsuario, evento.dataEventoIni,evento.dataEventoFim, ifnull(feriados.descricao,tipoEventos.descTipoEvento) descricao,tipoEventos.codTipo, tipoEventos.descTipoEvento 
+                            from usuario
+                            INNER join evento
+                            on evento.idUsuario =  usuario.idUsuario
+                            LEFT join feriados
+                            on feriados.data between evento.dataEventoIni and evento.dataEventoFim
+                            LEFT join tipoEventos
+                            on tipoEventos.codTipo = evento.codTipo
+                            where usuario.idUsuario = ${idUsuario}
+                            and ifnull(feriados.descricao,tipoEventos.descTipoEvento) like '%${descricao}%'
+                            order by evento.dataEventoIni`
+                            , (error, items) => {
+                                if (error) { rejeitado(error); return; }
+                                aceito(items);
+                            });
+                    }
+                }
+
+            }
+
+        });
+    },
+
+    inserir: (idUsuario, dataEventoIni, dataEventoFim, codTipo) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('INSERT INTO evento (idUsuario,  dataEventoIni, dataEventoFim, codTipo) VALUES (?,?,?,?)', 
-                [idUsuario,  dataEventoIni, dataEventoFim, codTipo],    
+            db.query('INSERT INTO evento (idUsuario,  dataEventoIni, dataEventoFim, codTipo) VALUES (?,?,?,?)',
+                [idUsuario, dataEventoIni, dataEventoFim, codTipo],
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
                     aceito(items.insertdata);
@@ -70,11 +151,11 @@ module.exports = {
         });
     },
 
-    alterar: (idUsuario,  dataEventoIni, dataEventoFim, codTipo) => {
+    alterar: (idUsuario, dataEventoIni, dataEventoFim, codTipo) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('UPDATE evento SET dataEventoIni = ? , dataEventoFim = ? , codTipo = ? WHERE idUsuario = ?', 
-                [dataEventoIni, dataEventoFim, codTipo,idUsuario],    
+            db.query('UPDATE evento SET dataEventoIni = ? , dataEventoFim = ? , codTipo = ? WHERE idUsuario = ?',
+                [dataEventoIni, dataEventoFim, codTipo, idUsuario],
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
                     aceito(items);
@@ -87,7 +168,7 @@ module.exports = {
 
         return new Promise((aceito, rejeitado) => {
 
-            db.query('DELETE FROM evento WHERE idEvento = ? AND idUsuario = ?',[idEvento,idUsuario], (error, items) => {
+            db.query('DELETE FROM evento WHERE idEvento = ? AND idUsuario = ?', [idEvento, idUsuario], (error, items) => {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });
