@@ -46,8 +46,8 @@ module.exports = {
             res.status(500).json( {
                 "data": "1",
                 "type": "error",
-                "message": `Equipe com código  ${idTipoPerfil} já cadastrada `,
-                "detailedMessage": `Equipe com código  ${idTipoPerfil} já cadastrada `
+                "message": `Tipo perfil com código  ${idTipoPerfil} já cadastrada `,
+                "detailedMessage": `Tipo perfil com código  ${idTipoPerfil} já cadastrada `
             });
         } else {
 
@@ -61,8 +61,8 @@ module.exports = {
                 res.status(500).json( {
                     "data": "1",
                     "type": "error",
-                    "message": `Já existe a descrição  ${descricaoPerfil} para o código de equipe ${idTipoPerfil}`,
-                    "detailedMessage": `Já existe a descrição  ${descricaoPerfil} para o código de equipe ${idTipoPerfil}`
+                    "message": `Já existe a descrição  ${descricaoPerfil} para o código  ${idTipoPerfil}`,
+                    "detailedMessage": `Já existe a descrição  ${descricaoPerfil} para o código ${idTipoPerfil}`
                 });
             } else {
     
