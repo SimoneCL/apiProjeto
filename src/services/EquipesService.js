@@ -56,8 +56,8 @@ module.exports = {
     inserir: (codEquipe,  descEquipe) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('INSERT INTO equipes (codEquipe,  descEquipe) VALUES (?,?)', 
-                [codEquipe,  descEquipe],    
+            db.query('INSERT INTO equipes (descEquipe) VALUES (?)', 
+                [ descEquipe],    
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
                     aceito(items.insertdata);

@@ -63,7 +63,7 @@ module.exports = {
                     "detailedMessage": `Já existe a descrição  ${descTipoEvento} para o código de equipe ${codTipo}`
                 });
             } else {
-                if (codTipo && descTipoEvento) {
+                if (descTipoEvento) {
                     await TipoEventoService.inserir(codTipo, descTipoEvento);
 
                     json.items = {
