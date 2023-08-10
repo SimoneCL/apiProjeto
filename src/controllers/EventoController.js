@@ -52,8 +52,8 @@ module.exports = {
 
 
                         });
+                        
                     }
-                    //usuario.idUsuario,usuario.nomeUsuario, evento.dataEventoIni,evento.dataEventoFim, ifnull(feriados.descricao,tipoEventos.descTipoEvento),tipoEventos.codTipo, tipoEventos.descTipoEvento
                 }
 
             } else {
@@ -112,13 +112,15 @@ module.exports = {
     alterar: async (req, res) => {
         let json = { error: '', items: {} };
 
-        let idUsuario = req.params.idUsuario;
+        let idEvento = req.params.idEvento
+        let idUsuario = req.body.idUsuario;
         let dataEventoIni = req.body.dataEventoIni;
         let dataEventoFim = req.body.dataEventoFim;
         let codTipo = req.body.codTipo;
-        if (idUsuario && dataEventoIni && dataEventoFim && codTipo) {
-            await EventoService.alterar(idUsuario, dataEventoIni, dataEventoFim, codTipo);
+        if (idEvento && idUsuario && dataEventoIni && dataEventoFim && codTipo) {
+            await EventoService.alterar(idEvento,idUsuario, dataEventoIni, dataEventoFim, codTipo);
             json.items = {
+                idEvento,
                 idUsuario,
                 dataEventoIni,
                 dataEventoFim,
