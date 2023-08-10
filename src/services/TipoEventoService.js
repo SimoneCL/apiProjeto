@@ -37,8 +37,8 @@ module.exports = {
     inserir: (codTipo, descTipoEvento) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('INSERT INTO tipoEventos (codTipo, descTipoEvento) VALUES (?,?)', 
-                [codTipo,descTipoEvento],    
+            db.query('INSERT INTO tipoEventos (descTipoEvento) VALUES (?)', 
+                [descTipoEvento],    
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
                     aceito(items.insertcodTipo);

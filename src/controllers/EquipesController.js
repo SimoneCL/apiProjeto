@@ -79,8 +79,7 @@ module.exports = {
                 });
             } else {
 
-
-                if (codEquipe && descEquipe) {
+                if (descEquipe) {
                     await EquipesService.inserir(codEquipe, descEquipe);
 
                     json.items = {
@@ -109,14 +108,26 @@ module.exports = {
             for (const i in equipes) {
                 codEquipe = equipes[i].codEquipe;
             }
+            if (codEquipe != req.params.codEquipe ) {
+                res.status(500).json({
+                    "data": "1",
+                    "type": "error",
+                    "message": `Já existe a descrição  ${descEquipe} para o código de equipe ${codEquipe}`,
+                    "detailedMessage": `Já existe a descrição  ${descEquipe} para o código de equipe ${codEquipe}`
+                });
+            } else {
 
-            res.status(500).json({
-                "data": "1",
-                "type": "error",
-                "message": `Já existe a descrição  ${descEquipe} para o código de equipe ${codEquipe}`,
-                "detailedMessage": `Já existe a descrição  ${descEquipe} para o código de equipe ${codEquipe}`
-            });
+                    await EquipesService.alterar(codEquipe, descEquipe);
+                    json.items = {
+                        codEquipe,
+                        descEquipe
+                    };
+                
+                res.json(json);
+            }
+            
         } else {
+
             if (codEquipe && descEquipe) {
                 await EquipesService.alterar(codEquipe, descEquipe);
                 json.items = {
