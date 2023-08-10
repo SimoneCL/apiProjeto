@@ -28,7 +28,7 @@ router.get('/evento',EventoController.buscarTodos);
 
 router.get('/evento/:idEvento',EventoController.buscarUm);
 router.post('/evento', EventoController.inserir);
-router.put('/evento/:idUsuario', EventoController.alterar);
+router.put('/evento/:idEvento', EventoController.alterar);
 router.delete('/evento/:id', EventoController.excluir);
 
 const UsuarioController = require('./controllers/UsuarioController');

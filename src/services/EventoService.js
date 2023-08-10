@@ -56,7 +56,7 @@ module.exports = {
         
         return new Promise((aceito, rejeitado) => {
             if (dataInicial && dataFinal) {
-                db.query(`select usuario.idUsuario,usuario.nomeUsuario, evento.dataEventoIni,evento.dataEventoFim, ifnull(feriados.descricao,tipoEventos.descTipoEvento) descricao,tipoEventos.codTipo, tipoEventos.descTipoEvento 
+                db.query(`select evento.idEvento,usuario.idUsuario,usuario.nomeUsuario, evento.dataEventoIni,evento.dataEventoFim, ifnull(feriados.descricao,tipoEventos.descTipoEvento) descricao,tipoEventos.codTipo, tipoEventos.descTipoEvento 
                             from usuario
                             INNER join evento
                             on evento.idUsuario =  usuario.idUsuario
@@ -151,11 +151,11 @@ module.exports = {
         });
     },
 
-    alterar: (idUsuario, dataEventoIni, dataEventoFim, codTipo) => {
+    alterar: (idEvento,idUsuario, dataEventoIni, dataEventoFim, codTipo) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('UPDATE evento SET dataEventoIni = ? , dataEventoFim = ? , codTipo = ? WHERE idUsuario = ?',
-                [dataEventoIni, dataEventoFim, codTipo, idUsuario],
+            db.query('UPDATE evento SET dataEventoIni = ? , dataEventoFim = ? , codTipo = ? WHERE idEvento = ? and idUsuario = ?',
+                [dataEventoIni, dataEventoFim, codTipo,idEvento, idUsuario],
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
                     aceito(items);
