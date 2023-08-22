@@ -35,51 +35,48 @@ module.exports = {
         res.json(json);        
     },
 
+    buscarDescTipoPerfil: async (req, res) => {
+        let json = { };
+        let descricaoPerfil = req.body.descricaoPerfil;
+        let tipoPerfilUsuarios = await tipoPerfilUsuarioService.buscarDescTipoPerfil(descricaoPerfil);        
+        if (tipoPerfilUsuarios) {
+            json = tipoPerfilUsuarios;
+        }
+        res.json(json);        
+    },
+
     inserir: async (req, res) => {
         let json = { error: '', items: {} };
-        let idTipoPerfil = req.body.idTipoPerfil;
         let descricaoPerfil = req.body.descricaoPerfil;
         
-        let tipoPerfil = await tipoPerfilUsuarioService.buscarUm(idTipoPerfil);
-        if (tipoPerfil) {
+        let descPerfilUsuario = await tipoPerfilUsuarioService.buscarDescTipoPerfil(descricaoPerfil);
+        if (descPerfilUsuario) {
             
             res.status(500).json( {
                 "data": "1",
                 "type": "error",
-                "message": `Tipo perfil com código  ${idTipoPerfil} já cadastrada `,
-                "detailedMessage": `Tipo perfil com código  ${idTipoPerfil} já cadastrada `
+                "message": `Tipo perfil já foi cadastrado`,
+                "detailedMessage": `Tipo perfil ${descricaoPerfil} já cadastrado.`
             });
-        } else {
 
-            let tipoPerfil = await tipoPerfilUsuarioService.buscarDescricaoEquipe(descricaoPerfil);
-            if (tipoPerfil.length > 0) {
-                
-                for (const i in tipoPerfil) {
-                    idTipoPerfil = tipoPerfil[i].idTipoPerfil;
-                }
-           
+        } else {            
+            if (descricaoPerfil) {
+                await tipoPerfilUsuarioService.inserir(descricaoPerfil);
+
+                json.items = {
+                    descricaoPerfil
+                };
+
+                res.json(json);
+
+            } else {
                 res.status(500).json( {
                     "data": "1",
                     "type": "error",
-                    "message": `Já existe a descrição  ${descricaoPerfil} para o código  ${idTipoPerfil}`,
-                    "detailedMessage": `Já existe a descrição  ${descricaoPerfil} para o código ${idTipoPerfil}`
+                    "message": `Tipo perfil em branco`,
+                    "detailedMessage": `Tipo perfil não pode ser em branco.`
                 });
-            } else {
-    
-            
-                if (idTipoPerfil && descricaoPerfil) {
-                await tipoPerfilUsuarioService.inserir(idTipoPerfil, descricaoPerfil);
-
-                    json.items = {
-                        idTipoPerfil,
-                        descricaoPerfil
-                    };
-
-                } else {
-                    json.error = 'Campos não enviados';
-                }
-                res.json(json);
-            }
+            }                        
         }
     },
 

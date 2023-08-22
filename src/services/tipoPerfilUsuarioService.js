@@ -44,11 +44,26 @@ module.exports = {
 
     },
     
-    inserir: (idTipoPerfil,  descricaoPerfil) => {
+    buscarDescTipoPerfil: (descricaoPerfil) => {
+        return new Promise((aceito, rejeitado) => {
+            db.query('SELECT * FROM perfilusuario WHERE descricaoPerfil = ?', [descricaoPerfil], (error, items) => {
+                if (error) { rejeitado(error); return; }
+                
+                if (items.length > 0) {
+                    aceito(items[0]);
+                } else {
+                    aceito(false);
+                }
+            });
+        });
+
+    },
+
+    inserir: (descricaoPerfil) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('INSERT INTO perfilusuario (idTipoPerfil,  descricaoPerfil) VALUES (?,?)', 
-                [idTipoPerfil,  descricaoPerfil],    
+            db.query('INSERT INTO perfilusuario (descricaoPerfil) VALUES (?)', 
+                [descricaoPerfil],    
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
                     aceito(items.insertdata);
