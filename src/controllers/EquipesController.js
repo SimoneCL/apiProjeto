@@ -40,11 +40,11 @@ module.exports = {
     },
 
     buscarUm: async (req, res) => {
-        let json = { error: '', items: {} };
+        let json = {};
         let codEquipe = req.params.codEquipe;
         let equipes = await EquipesService.buscarUm(codEquipe);
         if (equipes) {
-            json.items = equipes;
+            json = equipes;
         }
         res.json(json);
     },

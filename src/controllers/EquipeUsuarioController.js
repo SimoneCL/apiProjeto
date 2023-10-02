@@ -1,7 +1,7 @@
 const EquipeUsuarioService = require('../services/EquipeUsuarioService');
 module.exports = {
     buscarTodos: async (req, res) => {
-        let json = { error: '', items: []};
+        let json = { error: '', items: [] };
         if (req.query.idUsuario) {
             let equipeUsuario = await EquipeUsuarioService.buscarEquipesUsuario(req.query.idUsuario);
             for (let i in equipeUsuario) {
@@ -23,7 +23,7 @@ module.exports = {
         }
     },
     buscarUsuarioEquipe: async (req, res) => {
-        
+
         let json = { error: '', items: [] };
         let equipeUsuario = await EquipeUsuarioService.buscarUsuarioEquipe(req.query.codEquipe);
         for (let i in equipeUsuario) {
@@ -35,7 +35,7 @@ module.exports = {
         res.json(json);
     },
     buscarUm: async (req, res) => {
-        let json =  { error: '', items: {} };
+        let json = { error: '', items: {} };
         let idUsuario = req.params.id;
         let equipeUsuario = await EquipeUsuarioService.buscarEquipesUsuario(idUsuario);
         if (equipeUsuario) {
@@ -64,10 +64,10 @@ module.exports = {
 
     excluir: async (req, res) => {
         let json = { error: '', items: {} };
-        
-        let idUsuario = req.params.id.split(";")[0];
-        let codEquipe = req.params.id.split(";")[1];
-        await EquipeUsuarioService.excluir(idUsuario,codEquipe);
+
+        let idUsuario = req.params.id.split("|")[0];
+        let codEquipe = req.params.id.split("|")[1];
+        await EquipeUsuarioService.excluir(idUsuario, codEquipe);
 
         res.json(json);
     }

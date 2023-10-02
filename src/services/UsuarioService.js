@@ -12,17 +12,17 @@ module.exports = {
         });
     },
     
-    buscarPorNomeUsuario: (usuario) => {
+    buscarPorNomeUsuario: (nomeUsuario) => {
         return new Promise((aceito, rejeitado) => {
-            db.query(`SELECT * FROM usuario WHERE usuario like '%${usuario}%'`, (error, items) => {
+            db.query(`SELECT * FROM usuario WHERE nomeUsuario like '%${nomeUsuario}%'`, (error, items) => {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });
         });
     },
-    buscarNomeUsuario: (usuario) => {
+    buscarNomeUsuario: (nomeUsuario) => {
         return new Promise((aceito, rejeitado) => {
-            db.query('SELECT * FROM usuario WHERE usuario = ?', [usuario], (error, items) => {
+            db.query('SELECT * FROM usuario WHERE nomeUsuario = ?', [nomeUsuario], (error, items) => {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });
@@ -32,11 +32,11 @@ module.exports = {
     buscarUm: (idUsuario) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('SELECT * FROM usuario WHERE idUsuario = ?', [idUsuario], (error, items) => {
+            db.query(`SELECT * FROM usuario WHERE idUsuario in (${idUsuario})`, (error, items) => {
                 if (error) { rejeitado(error); return; }
 
                 if (items.length > 0) {
-                    aceito(items[0]);
+                    aceito(items);
                 } else {
                     aceito(false);
                 }
@@ -45,11 +45,11 @@ module.exports = {
 
     },
     
-    inserir: (idUsuario,  usuario, email, tipoPerfil,senha) => {
+    inserir: (nomeUsuario, email, tipoPerfil,senha) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('INSERT INTO usuario (idUsuario,  usuario, email, senha) VALUES (?,?,?,?)', 
-                [idUsuario,  usuario, email, tipoPerfil,senha],    
+            db.query('INSERT INTO usuario (  nomeUsuario, email,tipoPerfil, senha) VALUES (?,?,?,?)', 
+                [nomeUsuario, email, tipoPerfil,senha],    
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
                     aceito(items.insertdata);
@@ -58,11 +58,24 @@ module.exports = {
         });
     },
 
-    alterar: (idUsuario,  usuario, email, tipoPerfil,senha) => {
+    alterar: (idUsuario,  nomeUsuario, email, tipoPerfil) => {
         return new Promise((aceito, rejeitado) => {
           
-            db.query('UPDATE usuario SET usuario = ?, email = ?, tipoPerfil = ?, senha = ?  WHERE idUsuario = ?', 
-                [usuario, email, tipoPerfil, senha, idUsuario],    
+            db.query('UPDATE usuario SET nomeUsuario = ?, email = ?, tipoPerfil = ?  WHERE idUsuario = ?', 
+                [nomeUsuario, email, tipoPerfil, idUsuario],    
+                (error, items) => {
+                    if (error) { rejeitado(error); return; }
+                    aceito(items);
+                }
+            );
+        });
+    },
+
+    alterarSenha: (idUsuario,  senha) => {
+        return new Promise((aceito, rejeitado) => {
+          
+            db.query('UPDATE usuario SET senha = ?  WHERE idUsuario = ?', 
+                [senha, idUsuario],    
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
                     aceito(items);

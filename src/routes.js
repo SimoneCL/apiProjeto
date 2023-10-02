@@ -36,6 +36,7 @@ router.get('/usuario',UsuarioController.buscarTodos);
 router.get('/usuario/:idUsuario',UsuarioController.buscarUm);
 router.post('/usuario', UsuarioController.inserir);
 router.put('/usuario/:idUsuario', UsuarioController.alterar);
+router.put('/usuario/alterarSenha/:idUsuario', UsuarioController.alterarSenha);
 router.delete('/usuario/:idUsuario', UsuarioController.excluir);
 //module.exports = router;
 
