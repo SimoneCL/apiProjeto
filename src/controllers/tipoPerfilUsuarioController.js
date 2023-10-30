@@ -26,24 +26,24 @@ module.exports = {
     },
 
     buscarUm: async (req, res) => {
-        let json = { };
+        let json = {};
         let idTipoPerfil = req.params.id;
-        let tipoPerfilUsuarios = await tipoPerfilUsuarioService.buscarUm(idTipoPerfil);        
+        let tipoPerfilUsuarios = await tipoPerfilUsuarioService.buscarUm(idTipoPerfil);
         if (tipoPerfilUsuarios) {
             json = tipoPerfilUsuarios;
         }
-        res.json(json);        
+        res.json(json);
     },
 
     inserir: async (req, res) => {
         let json = { error: '', items: {} };
         let idTipoPerfil = req.body.idTipoPerfil;
         let descricaoPerfil = req.body.descricaoPerfil;
-        
+
         let tipoPerfil = await tipoPerfilUsuarioService.buscarUm(idTipoPerfil);
         if (tipoPerfil) {
-            
-            res.status(500).json( {
+
+            res.status(500).json({
                 "data": "1",
                 "type": "error",
                 "message": `Tipo perfil com código  ${idTipoPerfil} já cadastrada `,
@@ -51,24 +51,24 @@ module.exports = {
             });
         } else {
 
-            let tipoPerfil = await tipoPerfilUsuarioService.buscarDescricaoEquipe(descricaoPerfil);
+            let tipoPerfil = await tipoPerfilUsuarioService.buscarDescricaoPerfil(descricaoPerfil);
             if (tipoPerfil.length > 0) {
-                
+
                 for (const i in tipoPerfil) {
                     idTipoPerfil = tipoPerfil[i].idTipoPerfil;
                 }
-           
-                res.status(500).json( {
+
+                res.status(500).json({
                     "data": "1",
                     "type": "error",
                     "message": `Já existe a descrição  ${descricaoPerfil} para o código  ${idTipoPerfil}`,
                     "detailedMessage": `Já existe a descrição  ${descricaoPerfil} para o código ${idTipoPerfil}`
                 });
             } else {
-    
-            
-                if (idTipoPerfil && descricaoPerfil) {
-                await tipoPerfilUsuarioService.inserir(idTipoPerfil, descricaoPerfil);
+
+
+                if (descricaoPerfil) {
+                    await tipoPerfilUsuarioService.inserir(descricaoPerfil);
 
                     json.items = {
                         idTipoPerfil,
@@ -85,21 +85,35 @@ module.exports = {
 
     alterar: async (req, res) => {
         let json = { items: {} };
-        
+
         let idTipoPerfil = req.body.idTipoPerfil;
         let descricaoPerfil = req.body.descricaoPerfil;
-        let tipoPerfil = await tipoPerfilUsuarioService.alterar(idTipoPerfil,descricaoPerfil);
-        
+        let tipoPerfil = await tipoPerfilUsuarioService.alterar(idTipoPerfil, descricaoPerfil);
+
         if (tipoPerfil.length > 0) {
-            json = tipoPerfil;            
+            json = tipoPerfil;
         }
-        res.json(json);        
+        res.json(json);
     },
 
     excluir: async (req, res) => {
         let json = { items: {} };
-        await tipoPerfilUsuarioService.excluir(req.params.id);
+        let idTipoPerfil = req.params.id;
 
-        res.json(json);
+        let tipoPerfil = await tipoPerfilUsuarioService.buscarPerfilRelacUsuario(idTipoPerfil);
+        if (tipoPerfil.length > 0) {
+            res.status(500).json({
+                "data": "1",
+                "type": "error",
+                "message": 'Perfil não poderá ser eliminado, possui usuário relacionado ao perfil.',
+                "detailedMessage": `Existe usuário relacionado ao perfil`
+            });
+
+        } else {
+            await tipoPerfilUsuarioService.excluir(req.params.id);
+            res.json(json);
+        }
+
+
     }
 }

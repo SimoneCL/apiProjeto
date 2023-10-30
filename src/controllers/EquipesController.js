@@ -1,13 +1,20 @@
 const EquipesService = require('../services/EquipesService');
+const EquipeUsuarioService = require('../services/EquipeUsuarioService');
 module.exports = {
     buscarTodos: async (req, res) => {
         let json = { error: '', items: [] };
         if (req.query.descEquipe) {
             let equipes = await EquipesService.buscarPorDescricaoEquipe(req.query.descEquipe);
             for (let i in equipes) {
+                let arrayDeObjetos = [];
+                if (equipes[i].usuario) {
+                    let elementos = equipes[i].usuario.split(',');
+                    arrayDeObjetos = elementos.map(elemento => ({ usuario: elemento }));
+                }
                 json.items.push({
                     codEquipe: equipes[i].codEquipe,
-                    descEquipe: equipes[i].descEquipe
+                    descEquipe: equipes[i].descEquipe,
+                    detail: arrayDeObjetos
                 });
             }
             res.json(json);
@@ -25,16 +32,22 @@ module.exports = {
                 res.json(json);
             } else {
                 let equipes = await EquipesService.buscarTodos();
-                
+
                 for (let i in equipes) {
+                    let arrayDeObjetos = [];
+                    if (equipes[i].usuario) {
+                        let elementos = equipes[i].usuario.split(',');
+                        arrayDeObjetos = elementos.map(elemento => ({ usuario: elemento }));
+                    }
                     json.items.push({
                         codEquipe: equipes[i].codEquipe,
-                        descEquipe: equipes[i].descEquipe
+                        descEquipe: equipes[i].descEquipe,
+                        detail: arrayDeObjetos
                     });
                 }
                 res.json(json);
             }
-           
+
         }
 
     },
@@ -108,7 +121,7 @@ module.exports = {
             for (const i in equipes) {
                 codEquipe = equipes[i].codEquipe;
             }
-            if (codEquipe != req.params.codEquipe ) {
+            if (codEquipe != req.params.codEquipe) {
                 res.status(500).json({
                     "data": "1",
                     "type": "error",
@@ -117,15 +130,15 @@ module.exports = {
                 });
             } else {
 
-                    await EquipesService.alterar(codEquipe, descEquipe);
-                    json.items = {
-                        codEquipe,
-                        descEquipe
-                    };
-                
+                await EquipesService.alterar(codEquipe, descEquipe);
+                json.items = {
+                    codEquipe,
+                    descEquipe
+                };
+
                 res.json(json);
             }
-            
+
         } else {
 
             if (codEquipe && descEquipe) {
@@ -145,9 +158,22 @@ module.exports = {
 
     excluir: async (req, res) => {
         let json = { error: '', items: {} };
+        let equipeUsuario = await EquipeUsuarioService.buscarUsuarioEquipe(req.params.codEquipe);
 
-        await EquipesService.excluir(req.params.codEquipe);
+        if (equipeUsuario.length > 0) {
+            res.status(500).json({
+                "data": "1",
+                "type": "error",
+                "message": 'Equipe não poderá ser eliminada, possui usuário relacionado à equipe.',
+                "detailedMessage": `Existe usuário relacionado à equipe`
+            });
 
-        res.json(json);
+        } else {
+            await EquipesService.excluir(req.params.codEquipe);
+            res.json(json);
+        }
+
+
+
     }
 }

@@ -23,22 +23,20 @@ module.exports = {
             if (req.query.idUsuario) {
                 let descricao = req.query.descricao;
                 let codTipo = '';
-                if (req.query.codTipo === undefined){
-                    
-                    let tipoEvento = await TipoEventoService.buscarTodos(); 
+                if (req.query.codTipo === undefined) {
+
+                    let tipoEvento = await TipoEventoService.buscarTodos();
                     for (let i in tipoEvento) {
-                       if (codTipo === '') {
-                        codTipo = tipoEvento[i].codTipo ;
-                       } else {
-                        codTipo = codTipo + ',' + tipoEvento[i].codTipo ;
-                       }
+                        if (codTipo === '') {
+                            codTipo = tipoEvento[i].codTipo;
+                        } else {
+                            codTipo = codTipo + ',' + tipoEvento[i].codTipo;
+                        }
                     }
-                   
+
                 } else {
                     codTipo = req.query.codTipo.toString();
                 }
-
-                
                 let evento = await EventoService.buscarPorIdUsuario(req.query.idUsuario, req.query.dataInicial, req.query.dataFinal, descricao, codTipo);
                 if (evento) {
                     for (let i in evento) {
@@ -52,7 +50,7 @@ module.exports = {
 
 
                         });
-                        
+
                     }
                 }
 
@@ -118,7 +116,7 @@ module.exports = {
         let dataEventoFim = req.body.dataEventoFim;
         let codTipo = req.body.codTipo;
         if (idEvento && idUsuario && dataEventoIni && dataEventoFim && codTipo) {
-            await EventoService.alterar(idEvento,idUsuario, dataEventoIni, dataEventoFim, codTipo);
+            await EventoService.alterar(idEvento, idUsuario, dataEventoIni, dataEventoFim, codTipo);
             json.items = {
                 idEvento,
                 idUsuario,
@@ -136,8 +134,11 @@ module.exports = {
         let json = { error: '', items: {} };
         let idEvento = req.params.id.split(";")[0];
         let idUsuario = req.params.id.split(";")[1];
-        await EventoService.excluir(idEvento, idUsuario);
+        if (idEvento && idUsuario) {
+            await EventoService.excluir(idEvento, idUsuario);
+        }
 
         res.json(json);
     }
+
 }

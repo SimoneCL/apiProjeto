@@ -33,12 +33,26 @@ module.exports = {
         });
 
     },
+    buscarEventoCodTipo: (codTipo) => {
+
+        return new Promise((aceito, rejeitado) => {
+            db.query(` SELECT * FROM tipoeventos
+                    WHERE codTipo =  ${codTipo}
+                    AND EXISTS (
+                        SELECT ${codTipo} FROM evento
+                        WHERE evento.codTipo =  tipoeventos.codtipo )`, (error, items) => {
+                if (error) { rejeitado(error); return; }
+
+                aceito(items);
+            });
+        });
+    },
 
     inserir: (codTipo, descTipoEvento) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('INSERT INTO tipoEventos (descTipoEvento) VALUES (?)', 
-                [descTipoEvento],    
+            db.query('INSERT INTO tipoEventos (descTipoEvento) VALUES (?)',
+                [descTipoEvento],
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
                     aceito(items.insertcodTipo);
@@ -47,11 +61,11 @@ module.exports = {
         });
     },
 
-    alterar: (codTipo ,descTipoEvento) => {
+    alterar: (codTipo, descTipoEvento) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('UPDATE tipoEventos SET descTipoEvento = ? WHERE codTipo = ?', 
-                [descTipoEvento, codTipo],    
+            db.query('UPDATE tipoEventos SET descTipoEvento = ? WHERE codTipo = ?',
+                [descTipoEvento, codTipo],
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
                     aceito(items);
@@ -64,7 +78,7 @@ module.exports = {
 
         return new Promise((aceito, rejeitado) => {
 
-            db.query('DELETE FROM tipoEventos WHERE codTipo = ?',[codTipo], (error, items) => {
+            db.query('DELETE FROM tipoEventos WHERE codTipo = ?', [codTipo], (error, items) => {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });

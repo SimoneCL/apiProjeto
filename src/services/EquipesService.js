@@ -5,11 +5,17 @@ module.exports = {
     buscarTodos: () => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('SELECT * FROM equipes', (error, items) => {
+            db.query(` SELECT equipes.* , GROUP_CONCAT(usuario.nomeUsuario) AS usuario
+                        FROM equipes
+                        left JOIN equipeUsuario
+                        ON equipeUsuario.codEquipe = equipes.codEquipe
+                        left join usuario
+                        on usuario.idUsuario = equipeusuario.idUsuario
+                        GROUP BY equipes.codEquipe`, (error, items) => {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });
-           
+
         });
     },
     buscarPorCodEquipe: (codEquipe) => {
@@ -22,10 +28,22 @@ module.exports = {
     },
     buscarPorDescricaoEquipe: (descEquipe) => {
         return new Promise((aceito, rejeitado) => {
-            db.query(`SELECT * FROM equipes WHERE descEquipe like '%${descEquipe}%'`, (error, items) => {
+
+            db.query(` SELECT equipes.* , GROUP_CONCAT(usuario.nomeUsuario) AS usuario
+                        FROM equipes
+                        left JOIN equipeUsuario
+                        ON equipeUsuario.codEquipe = equipes.codEquipe
+                        left join usuario
+                        on usuario.idUsuario = equipeusuario.idUsuario
+                        where equipes.descEquipe like '%${descEquipe}%'
+                        GROUP BY equipes.codEquipe`, (error, items) => {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });
+            // db.query(`SELECT * FROM equipes WHERE descEquipe like '%${descEquipe}%'`, (error, items) => {
+            //     if (error) { rejeitado(error); return; }
+            //     aceito(items);
+            // });
         });
     },
     buscarDescricaoEquipe: (descEquipe) => {
@@ -52,12 +70,12 @@ module.exports = {
         });
 
     },
-    
-    inserir: (codEquipe,  descEquipe) => {
+
+    inserir: (codEquipe, descEquipe) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('INSERT INTO equipes (descEquipe) VALUES (?)', 
-                [ descEquipe],    
+            db.query('INSERT INTO equipes (descEquipe) VALUES (?)',
+                [descEquipe],
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
                     aceito(items.insertdata);
@@ -66,11 +84,11 @@ module.exports = {
         });
     },
 
-    alterar: (codEquipe,  descEquipe) => {
+    alterar: (codEquipe, descEquipe) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('UPDATE equipes SET descEquipe = ?  WHERE codEquipe = ?', 
-                [descEquipe,codEquipe],    
+            db.query('UPDATE equipes SET descEquipe = ?  WHERE codEquipe = ?',
+                [descEquipe, codEquipe],
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
                     aceito(items);
@@ -83,7 +101,7 @@ module.exports = {
 
         return new Promise((aceito, rejeitado) => {
 
-            db.query('DELETE FROM equipes WHERE codEquipe = ?',[codEquipe], (error, items) => {
+            db.query('DELETE FROM equipes WHERE codEquipe = ?', [codEquipe], (error, items) => {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });

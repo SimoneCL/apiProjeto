@@ -1,6 +1,8 @@
 const FeriadosService = require('../services/FeriadosService');
 const UsuarioService = require('../services/UsuarioService');
 const EventoService = require('../services/EventoService');
+const TipoEventoService = require('../services/TipoEventoService');
+const EventoFeriadosService = require('../services/eventoFeriadosService')
 module.exports = {
     buscarTodos: async (req, res) => {
         let json = { error: '', items: [] };
@@ -18,9 +20,9 @@ module.exports = {
             }
             res.json(json);
         } else {
-            
-            if(req.query.dataInicial && req.query.dataFinal){
-                let feriado = await FeriadosService.buscarAvancada(req.query.dataInicial ,req.query.dataFinal);
+
+            if (req.query.dataInicial && req.query.dataFinal) {
+                let feriado = await FeriadosService.buscarAvancada(req.query.dataInicial, req.query.dataFinal);
                 for (let i in feriado) {
                     json.items.push({
                         idFeriado: feriado[i].idFeriado,
@@ -28,7 +30,7 @@ module.exports = {
                         descricao: feriado[i].descricao,
                         tipoFeriado: feriado[i].tipoFeriado,
                         pontoFacultativo: feriado[i].pontoFacultativo
-    
+
                     });
                 }
             } else {
@@ -40,11 +42,11 @@ module.exports = {
                         descricao: feriado[i].descricao,
                         tipoFeriado: feriado[i].tipoFeriado,
                         pontoFacultativo: feriado[i].pontoFacultativo
-    
+
                     });
                 }
             }
-           
+
             res.json(json);
         }
     },
@@ -62,12 +64,27 @@ module.exports = {
         let json = { error: '', items: {} };
         let usuario = await UsuarioService.buscarTodos();
         let feriado = req.body;
-        for (const i in feriado) {
+        let tipoEvento = await TipoEventoService.buscarTodos();
+        let codTipo = 0;
+        for (let i in tipoEvento) {
+            if (tipoEvento[i].descTipoEvento === 'feriado') {
+                codTipo = tipoEvento[i].codTipo;
+            }
+        }
 
-            let feriadoOk = await FeriadosService.inserir(feriado[i].data, feriado[i].descricao, feriado[i].tipoFeriado, feriado[i].pontoFacultativo);
-            if (feriadoOk === undefined) {
-                for (const j in usuario) {
-                    await EventoService.inserir(usuario[j].idUsuario, feriado[i].data, feriado[i].data, 5);
+        if (codTipo) {
+            for (const i in feriado) {
+                let feriadoOk = await FeriadosService.inserir(feriado[i].data, feriado[i].descricao, feriado[i].tipoFeriado, feriado[i].pontoFacultativo);
+                if (feriadoOk === undefined) {
+                    for (const j in usuario) {
+                        await EventoService.inserir(usuario[j].idUsuario, feriado[i].data, feriado[i].data, codTipo);
+                    }
+                }
+                let feriadoNac = await FeriadosService.buscarAvancada(feriado[i].data, feriado[i].data);
+                let evento = await EventoService.buscarPorData(feriado[i].data);
+
+                for (const f in evento) {
+                    await EventoFeriadosService.inserir(feriadoNac[0].idFeriado, evento[f].idEvento)
                 }
             }
         }
@@ -84,7 +101,7 @@ module.exports = {
         let tipoFeriado = req.body.tipoFeriado;
         let pontoFacultativo = req.body.pontoFacultativo;
         let feriado = await FeriadosService.buscarUm(data);
-        
+
         if (feriado) {
 
             res.status(500).json({
@@ -105,11 +122,20 @@ module.exports = {
             } else {
                 if (data && descricao) {
                     let feriadoOk = await FeriadosService.inserir(data, descricao, tipoFeriado, pontoFacultativo);
-                   if (feriadoOk === undefined) {
+                    if (feriadoOk === undefined) {
+
                         let usuario = await UsuarioService.buscarTodos();
                         for (const j in usuario) {
                             await EventoService.inserir(usuario[j].idUsuario, data, data, 5);
+
+
                         }
+                    }
+                    let feriado = await FeriadosService.buscarAvancada(data, data);
+                    let evento = await EventoService.buscarPorData(data);
+
+                    for (const f in evento) {
+                        await EventoFeriadosService.inserir(feriado[0].idFeriado, evento[f].idEvento)
                     }
                     json.items = {
                         data,
@@ -184,7 +210,15 @@ module.exports = {
 
     excluir: async (req, res) => {
         let json = { error: '', items: {} };
+        let feriado = await EventoFeriadosService.buscarIdFeriado(req.params.idFeriado)
+
+        for (const i in feriado) {
+
+            await EventoFeriadosService.excluir(feriado[i].idFeriado, feriado[i].idEvento);
+            await EventoService.excluirEvento(feriado[i].idEvento);
+        }
         await FeriadosService.excluir(req.params.idFeriado);
+
 
         res.json(json);
     }

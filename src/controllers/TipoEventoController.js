@@ -128,9 +128,21 @@ module.exports = {
 
     excluir: async (req, res) => {
         let json = { error: '', items: {} };
+        
+        let tipoEvento = await TipoEventoService.buscarEventoCodTipo(req.params.codTipo);
+        if (tipoEvento.length > 0) {
+            res.status(500).json({
+                "data": "1",
+                "type": "error",
+                "message": 'Tipo evento não poderá ser eliminado, existe evento relacionado.',
+                "detailedMessage": `Tipo evento não poderá ser eliminado,existe evento relacionado.`
+            });
 
-        await TipoEventoService.excluir(req.params.codTipo);
+        } else {
+            await TipoEventoService.excluir(req.params.codTipo);
 
-        res.json(json);
+            res.json(json);
+        }
+       
     }
 }
