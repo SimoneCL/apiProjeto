@@ -11,8 +11,20 @@ module.exports = {
             });
         });
     },
-    
-    buscarPorDescricaoEquipe: (descricaoPerfil) => {
+    buscarPerfilRelacUsuario: (tipoPerfil) => {
+       
+        return new Promise((aceito, rejeitado) => {
+            db.query(`SELECT * FROM perfilusuario
+            WHERE idTipoPerfil = ${tipoPerfil}
+            AND EXISTS (
+                SELECT ${tipoPerfil} FROM usuario
+                WHERE usuario.tipoPerfil = perfilusuario.idTipoPerfil)`, (error, items) => {
+                if (error) { rejeitado(error); return; }
+                aceito(items);
+            });
+        });
+    },
+    buscarPorDescricaoPerfil: (descricaoPerfil) => {
         return new Promise((aceito, rejeitado) => {
             db.query(`SELECT * FROM perfilusuario WHERE descricaoPerfil like '%${descricaoPerfil}%'`, (error, items) => {
                 if (error) { rejeitado(error); return; }
@@ -20,7 +32,7 @@ module.exports = {
             });
         });
     },
-    buscarDescricaoEquipe: (descricaoPerfil) => {
+    buscarDescricaoPerfil: (descricaoPerfil) => {
         return new Promise((aceito, rejeitado) => {
             db.query('SELECT * FROM perfilusuario WHERE descricaoPerfil = ?', [descricaoPerfil], (error, items) => {
                 if (error) { rejeitado(error); return; }
@@ -33,7 +45,7 @@ module.exports = {
         return new Promise((aceito, rejeitado) => {
             db.query('SELECT * FROM perfilusuario WHERE idTipoPerfil = ?', [idTipoPerfil], (error, items) => {
                 if (error) { rejeitado(error); return; }
-                
+
                 if (items.length > 0) {
                     aceito(items[0]);
                 } else {
@@ -43,12 +55,12 @@ module.exports = {
         });
 
     },
-    
-    inserir: (idTipoPerfil,  descricaoPerfil) => {
+
+    inserir: (descricaoPerfil) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('INSERT INTO perfilusuario (idTipoPerfil,  descricaoPerfil) VALUES (?,?)', 
-                [idTipoPerfil,  descricaoPerfil],    
+            db.query('INSERT INTO perfilusuario (descricaoPerfil) VALUES (?)',
+                [descricaoPerfil],
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
                     aceito(items.insertdata);
@@ -57,10 +69,10 @@ module.exports = {
         });
     },
 
-    alterar: (idTipoPerfil,  descricaoPerfil) => {
+    alterar: (idTipoPerfil, descricaoPerfil) => {
         return new Promise((aceito, rejeitado) => {
-            db.query('UPDATE perfilusuario SET descricaoPerfil = ?  WHERE idTipoPerfil = ?', 
-                [descricaoPerfil, idTipoPerfil],    
+            db.query('UPDATE perfilusuario SET descricaoPerfil = ?  WHERE idTipoPerfil = ?',
+                [descricaoPerfil, idTipoPerfil],
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
                     aceito(items);
@@ -72,7 +84,7 @@ module.exports = {
     excluir: (idTipoPerfil) => {
 
         return new Promise((aceito, rejeitado) => {
-            db.query('DELETE FROM perfilusuario WHERE idTipoPerfil = ?',[idTipoPerfil], (error, items) => {
+            db.query('DELETE FROM perfilusuario WHERE idTipoPerfil = ?', [idTipoPerfil], (error, items) => {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });
