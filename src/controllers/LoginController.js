@@ -1,3 +1,4 @@
+const hashSenha = require('../hashSenha');
 const loginService = require('../services/loginService');
 module.exports = {
     buscarTodos: async (req, res) => {
@@ -18,7 +19,8 @@ module.exports = {
     buscarUm: async (req, res) => {
         let json = { };
         let userEmail = req.params.user;
-        let users = await loginService.buscarUm(userEmail);
+        let senha = req.params.senha;     
+        let users = await loginService.buscarUm(userEmail, senha);
         if (users) {
             json = users;
         }

@@ -1,3 +1,4 @@
+const hashSenha = require('../hashSenha');
 const db = require('../db');
 
 // para fazer validações tive que instalar o express-validator (npm install --save express-validator)
@@ -93,9 +94,25 @@ module.exports = {
 
     },
 
+    comparaSenha: (idUsuario, senha) => {
+        return new Promise((aceito, rejeitado) => {
+            senhaHash = hashSenha.gerarSenha(senha);            
+            db.query('SELECT * FROM usuario WHERE idUsuario = ? AND senha = ?', [idUsuario, senhaHash], (error, items) => {
+                if (error) { rejeitado(error); return; }
+
+                if (items.length > 0) {
+                    aceito(items[0]);
+                } else {
+                    aceito(false);
+                }
+            });
+        });
+
+    },
+
     inserir: (nomeUsuario, email, tipoPerfil, senha) => {
         return new Promise((aceito, rejeitado) => {
-
+            senha = hashSenha.gerarSenha(senha);
             db.query('INSERT INTO usuario (nomeUsuario, email,tipoPerfil, senha) VALUES (?,?,?,?)',
                 [nomeUsuario, email, tipoPerfil, senha],
                 (error, items) => {
@@ -122,7 +139,8 @@ module.exports = {
 
     alterarSenha: (idUsuario, senha) => {
         return new Promise((aceito, rejeitado) => {
-
+            senha = hashSenha.gerarSenha(atob(senha));
+            
             db.query('UPDATE usuario SET senha = ?  WHERE idUsuario = ?',
                 [senha, idUsuario],
                 (error, items) => {

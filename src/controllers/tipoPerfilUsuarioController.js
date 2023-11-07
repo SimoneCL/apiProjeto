@@ -3,7 +3,7 @@ module.exports = {
     buscarTodos: async (req, res) => {
         let json = { items: [] };
         if (req.query.descricaoPerfil) {
-            let tipoPerfilUsuario = await tipoPerfilUsuarioService.buscarPorDescricaoEquipe(req.query.descricaoPerfil);
+            let tipoPerfilUsuario = await tipoPerfilUsuarioService.buscarPorDescricaoPerfil(req.query.descricaoPerfil);
             for (let i in tipoPerfilUsuario) {
                 json.items.push({
                     idTipoPerfil: tipoPerfilUsuario[i].idTipoPerfil,

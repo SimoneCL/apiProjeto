@@ -101,6 +101,18 @@ module.exports = {
         }
         res.json(json);
     },
+
+    comparaSenha: async (req, res) => {
+        let json = {}; //{ error: '', items: {} };
+        let idUsuario = req.params.idUsuario;
+        let senhaUsuario = atob(req.params.senha); 
+        let usuario = await UsuarioService.comparaSenha(idUsuario,senhaUsuario);
+        if (usuario) {
+            json = usuario;
+        }
+        res.json(json);
+    },
+
     buscarUsuariolookup: async (req, res) => {
 
         let json = { error: '', items: [] };
@@ -195,9 +207,9 @@ module.exports = {
     alterarSenha: async (req, res) => {
         let json = { error: '', items: {} };
         let idUsuario = req.params.idUsuario;
-        let senha = req.body.senha;
-
-        if (idUsuario && senha) {
+        let senha = req.params.senha;
+        //let senha = atob(req.params.senha);
+        if (idUsuario) {
             await UsuarioService.alterarSenha(idUsuario, senha);
             json.items = {
                 idUsuario,
