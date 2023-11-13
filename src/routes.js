@@ -34,9 +34,11 @@ router.delete('/evento/:id', EventoController.excluir);
 const UsuarioController = require('./controllers/UsuarioController');
 router.get('/usuario',UsuarioController.buscarTodos);
 router.get('/usuario/:idUsuario',UsuarioController.buscarUm);
+router.get('/usuario/buscarEmail/:email',UsuarioController.buscarEmail);
 router.post('/usuario', UsuarioController.inserir);
 router.put('/usuario/:idUsuario', UsuarioController.alterar);
 router.put('/usuario/alterarSenha/:idUsuario', UsuarioController.alterarSenha);
+//router.put('/usuario/alterarSenha/:email', UsuarioController.alterarSenhaAleatoria);
 router.delete('/usuario/:idUsuario', UsuarioController.excluir);
 //module.exports = router;
 
