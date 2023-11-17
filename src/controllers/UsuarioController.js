@@ -113,6 +113,65 @@ module.exports = {
         res.json(json);
     },
 
+    buscarEmail: async (req, res) => {
+        let json = {}; //{ error: '', items: {} };
+        let email = req.params.email;
+        let usuario = await UsuarioService.buscarEmail(email);
+        if (usuario) {
+            json = usuario;
+            
+            let nomeUsuario = usuario[0].nomeUsuario;
+    
+            const tamanhoSenha = 6;
+            const caracteres = '0123456789';
+            let senha = '';
+                      
+            for (let i = 0; i < tamanhoSenha; i++) {
+                const indiceAleatorio = Math.floor(Math.random() * caracteres.length);
+                senha += caracteres.charAt(indiceAleatorio);
+            }
+                      
+            UsuarioService.alterarSenhaAleatoria(email, senha);
+
+            const nodemailer = require('nodemailer');
+
+            const transporter = nodemailer.createTransport({
+                service: 'Gmail',
+                auth: {
+                    user: 'marcodalacort@gmail.com',
+                    pass: 'rshwumnrstmjoiog'
+                }
+                /*auth: {
+                    user: 'folgaferiastotvs@gmail.com',
+                    pass: 'folgaferias@123',                    
+                },*/
+            });
+            console.log(email);
+            const mailOptions = {
+                from: 'marcodalacort@gmail.com',
+                to: email,
+                subject: 'Recuperação de Senha do Sistema Férias e Folgas',
+                html: `
+                    <p>Prezado(a) ${nomeUsuario},</p>
+                    <p>Recebemos uma solicitação de recuperação de senha para a sua conta no Férias e Folgas Totvs.</p>
+                    <p>Sua nova senha temporária é: <span style="font-size: 18px; font-weight: bold;">${senha}</span>.</p>
+                    <p>Use esta senha temporária para acessar sua conta.<p> 
+                    <p>Recomendamos que você faça login imediatamente e altere sua senha depois de entrar na sua conta.</p>
+                    <p>Atenciosamente,<br>A Equipe do Férias e Folgas Totvs.</p>
+                    `,
+              };
+              
+              transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                  console.log('Erro ao enviar o e-mail: ' + error);
+                } else {
+                  console.log('E-mail enviado com sucesso: ' + info.response);
+                }
+              });
+        }
+        res.json(json);
+    },
+
     buscarUsuariolookup: async (req, res) => {
 
         let json = { error: '', items: [] };
@@ -141,7 +200,17 @@ module.exports = {
         let nomeUsuario = req.body.nomeUsuario;
         let email = req.body.email;
         let tipoPerfil = req.body.tipoPerfil;
-        let senha = req.body.senha;
+        //let senha = req.body.senha;
+
+        const tamanhoSenha = 6;
+        const caracteres = '0123456789';
+        let senha = '';
+                      
+        for (let i = 0; i < tamanhoSenha; i++) {
+            const indiceAleatorio = Math.floor(Math.random() * caracteres.length);
+            senha += caracteres.charAt(indiceAleatorio);
+        }
+
         if (nomeUsuario && email && tipoPerfil) {
             await UsuarioService.inserir(nomeUsuario, email, tipoPerfil, senha);
             let usuario = await UsuarioService.buscarUsuarioPorEmail(email);
@@ -174,6 +243,40 @@ module.exports = {
                 tipoPerfil,
                 senha
             };
+
+            const nodemailer = require('nodemailer');
+            const transporter = nodemailer.createTransport({
+                service: 'Gmail',
+                auth: {
+                    user: 'marcodalacort@gmail.com',
+                    pass: 'rshwumnrstmjoiog'
+                }
+                /*auth: {
+                    user: 'folgaferiastotvs@gmail.com',
+                    pass: 'folgaferias@123',                    
+                },*/
+            });            
+            const mailOptions = {
+                from: 'marcodalacort@gmail.com',
+                to: email,
+                subject: 'Usuário criado no Sistema Férias e Folgas',
+                html: `
+                    <p>Prezado(a) ${nomeUsuario},</p>
+                    <p>Você agora está registrado no Férias e Folgas Totvs.</p>
+                    <p>Sua nova senha temporária é: <span style="font-size: 18px; font-weight: bold;">${senha}</span>.</p>
+                    <p>Use esta senha temporária para acessar sua conta.<p> 
+                    <p>Recomendamos que você faça login imediatamente e altere sua senha depois de entrar na sua conta.</p>
+                    <p>Atenciosamente,<br>A Equipe do Férias e Folgas Totvs.</p>
+                    `,
+              };
+              
+              transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                  console.log('Erro ao enviar o e-mail: ' + error);
+                } else {
+                  console.log('E-mail enviado com sucesso: ' + info.response);
+                }
+              });
 
         } else {
             json.error = 'Campos não enviados';
