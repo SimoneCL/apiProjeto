@@ -33,11 +33,12 @@ router.delete('/evento/:id', EventoController.excluir);
 
 const UsuarioController = require('./controllers/UsuarioController');
 router.get('/usuario',UsuarioController.buscarTodos);
+router.get('/usuario/buscarEmail/:email',UsuarioController.buscarEmail);
 router.get('/usuario/:idUsuario/:senha/', UsuarioController.comparaSenha);
 router.get('/usuario/:idUsuario',UsuarioController.buscarUm);
 router.post('/usuario', UsuarioController.inserir);
 router.put('/usuario/:idUsuario', UsuarioController.alterar);
-router.put('/usuario/alteraSenha/:idUsuario/:senha', UsuarioController.alterarSenha);
+router.put('/usuario/alterarSenha/:idUsuario/:senha', UsuarioController.alterarSenha);
 router.delete('/usuario/:idUsuario', UsuarioController.excluir);
 //module.exports = router;
 
