@@ -66,8 +66,8 @@ module.exports = {
         let feriado = req.body;
         let tipoEvento = await TipoEventoService.buscarTodos();
         let codTipo = 0;
-        for (let i in tipoEvento) {
-            if (tipoEvento[i].descTipoEvento === 'feriado') {
+       for (let i in tipoEvento) {
+            if (tipoEvento[i].codTipo === 1) {
                 codTipo = tipoEvento[i].codTipo;
             }
         }
@@ -126,7 +126,7 @@ module.exports = {
 
                         let usuario = await UsuarioService.buscarTodos();
                         for (const j in usuario) {
-                            await EventoService.inserir(usuario[j].idUsuario, data, data, 5);
+                            await EventoService.inserir(usuario[j].idUsuario, data, data, 1); //1 - feriado
 
 
                         }

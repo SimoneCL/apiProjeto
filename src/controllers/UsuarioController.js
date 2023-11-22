@@ -224,7 +224,7 @@ module.exports = {
                 let tipoEvento = await TipoEventoService.buscarTodos();
 
                 for (let i in tipoEvento) {
-                    if (tipoEvento[i].descTipoEvento === 'feriado') {
+                    if (tipoEvento[i].codTipo === 1) {  //1 - feriado
                         codTipo = tipoEvento[i].codTipo;
                     }
                 }
