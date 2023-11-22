@@ -66,7 +66,7 @@ module.exports = {
         }
 
         return new Promise((aceito, rejeitado) => {
-            if (dataInicial && dataFinal) {
+            if (dataInicial && dataFinal &&  descricao != '') {
                 
                 db.query(`select evento.idEvento,usuario.idUsuario,usuario.nomeUsuario, evento.dataEventoIni,evento.dataEventoFim, ifnull(feriados.descricao,tipoEventos.descTipoEvento) descricao,tipoEventos.codTipo, tipoEventos.descTipoEvento 
                             from usuario
@@ -87,7 +87,7 @@ module.exports = {
                         aceito(items);
                     });
             } else {
-                if (dataInicial) {
+                if (dataInicial && descricao != '') {
                     db.query(`select usuario.idUsuario,usuario.nomeUsuario, evento.dataEventoIni,evento.dataEventoFim, ifnull(feriados.descricao,tipoEventos.descTipoEvento) descricao,tipoEventos.codTipo, tipoEventos.descTipoEvento 
                                 from usuario
                                 INNER join evento
@@ -106,8 +106,7 @@ module.exports = {
                             aceito(items);
                         });
                 } else {
-
-                    if (dataFinal) {
+                    if (dataFinal && descricao != '') {
                         db.query(`select usuario.idUsuario,usuario.nomeUsuario, evento.dataEventoIni,evento.dataEventoFim, ifnull(feriados.descricao,tipoEventos.descTipoEvento) descricao,tipoEventos.codTipo, tipoEventos.descTipoEvento 
                                     from usuario
                                     INNER join evento
