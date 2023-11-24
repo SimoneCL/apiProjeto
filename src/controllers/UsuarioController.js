@@ -138,17 +138,18 @@ module.exports = {
             const transporter = nodemailer.createTransport({
                 service: 'Gmail',
                 auth: {
-                    user: 'marcodalacort@gmail.com',
-                    pass: 'rshwumnrstmjoiog'
-                }
-                /*auth: {
                     user: 'folgaferiastotvs@gmail.com',
-                    pass: 'folgaferias@123',                    
-                },*/
+                    pass: 'lnadbmnrsyfijmzk',                    
+                }
+                // auth: {
+                //     user: 'marcodalacort@gmail.com',
+                //     pass: 'rshwumnrstmjoiog'
+                // }
+                
             });
             console.log(email);
             const mailOptions = {
-                from: 'marcodalacort@gmail.com',
+                from: 'folgaferiastotvs@gmail.com',
                 to: email,
                 subject: 'Recuperação de Senha do Sistema Férias e Folgas',
                 html: `
@@ -248,16 +249,17 @@ module.exports = {
             const transporter = nodemailer.createTransport({
                 service: 'Gmail',
                 auth: {
-                    user: 'marcodalacort@gmail.com',
-                    pass: 'rshwumnrstmjoiog'
-                }
-                /*auth: {
                     user: 'folgaferiastotvs@gmail.com',
-                    pass: 'folgaferias@123',                    
-                },*/
+                    pass: 'lnadbmnrsyfijmzk',                    
+                }
+                // auth: {
+                //     user: 'marcodalacort@gmail.com',
+                //     pass: 'rshwumnrstmjoiog'
+                // }
+                
             });            
             const mailOptions = {
-                from: 'marcodalacort@gmail.com',
+                from: 'folgaferiastotvs@gmail.com',
                 to: email,
                 subject: 'Usuário criado no Sistema Férias e Folgas',
                 html: `
