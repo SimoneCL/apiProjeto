@@ -195,7 +195,7 @@ module.exports = {
         res.json(json);
     },
     inserir: async (req, res) => {
-        let json = { error: '', items: {} };
+        let json = { error: '', mailError: '', items: {} };
         let idUsuario = req.body.idUsuario;
         let idUsuarioAux = req.body.idUsuario;
         let nomeUsuario = req.body.nomeUsuario;
@@ -203,88 +203,97 @@ module.exports = {
         let tipoPerfil = req.body.tipoPerfil;
         //let senha = req.body.senha;
 
-        const tamanhoSenha = 6;
-        const caracteres = '0123456789';
-        let senha = '';
-                      
-        for (let i = 0; i < tamanhoSenha; i++) {
-            const indiceAleatorio = Math.floor(Math.random() * caracteres.length);
-            senha += caracteres.charAt(indiceAleatorio);
-        }
-
-        if (nomeUsuario && email && tipoPerfil) {
-            await UsuarioService.inserir(nomeUsuario, email, tipoPerfil, senha);
-            let usuario = await UsuarioService.buscarUsuarioPorEmail(email);
-            for (let i in usuario) {
-                idUsuarioAux = usuario[i].idUsuario;
-            }
-            if (idUsuarioAux) {
-                let feriado = await FeriadosService.buscarTodos();
-                let codTipo = 0;
-
-                let tipoEvento = await TipoEventoService.buscarTodos();
-
-                for (let i in tipoEvento) {
-                    if (tipoEvento[i].codTipo === 1) {  //1 - feriado
-                        codTipo = tipoEvento[i].codTipo;
-                    }
-                }
-
-                if (codTipo) {
-                    for (let i in feriado) {
-                        await EventoService.inserir(idUsuarioAux, feriado[i].data, feriado[i].data, codTipo);
-                    }
-                }
-            }
-
-            json.items = {
-                idUsuario,
-                nomeUsuario,
-                email,
-                tipoPerfil,
-                senha
-            };
-
-            const nodemailer = require('nodemailer');
-            const transporter = nodemailer.createTransport({
-                service: 'Gmail',
-                auth: {
-                    user: 'folgaferiastotvs@gmail.com',
-                    pass: 'lnadbmnrsyfijmzk',                    
-                }
-                // auth: {
-                //     user: 'marcodalacort@gmail.com',
-                //     pass: 'rshwumnrstmjoiog'
-                // }
-                
-            });            
-            const mailOptions = {
-                from: 'folgaferiastotvs@gmail.com',
-                to: email,
-                subject: 'Usuário criado no Sistema Férias e Folgas',
-                html: `
-                    <p>Prezado(a) ${nomeUsuario},</p>
-                    <p>Você agora está registrado no Férias e Folgas Totvs.</p>
-                    <p>Sua nova senha temporária é: <span style="font-size: 18px; font-weight: bold;">${senha}</span>.</p>
-                    <p>Use esta senha temporária para acessar sua conta.<p> 
-                    <p>Recomendamos que você faça login imediatamente e altere sua senha depois de entrar na sua conta.</p>
-                    <p>Atenciosamente,<br>A Equipe do Férias e Folgas Totvs.</p>
-                    `,
-              };
-              
-              transporter.sendMail(mailOptions, (error, info) => {
-                if (error) {
-                  console.log('Erro ao enviar o e-mail: ' + error);
-                } else {
-                  console.log('E-mail enviado com sucesso: ' + info.response);
-                }
-              });
-
+        let usuarioCadastrado = await UsuarioService.buscarUsuarioPorEmail(email);
+        if (usuarioCadastrado.length > 0) {
+            json.error = 'Email já está cadastrado';
+            res.json(json);
         } else {
-            json.error = 'Campos não enviados';
-        }
-        res.json(json);
+            const tamanhoSenha = 6;
+            const caracteres = '0123456789';
+            let senha = '';
+                        
+            for (let i = 0; i < tamanhoSenha; i++) {
+                const indiceAleatorio = Math.floor(Math.random() * caracteres.length);
+                senha += caracteres.charAt(indiceAleatorio);
+            }
 
+            if (nomeUsuario && email && tipoPerfil) {
+                await UsuarioService.inserir(nomeUsuario, email, tipoPerfil, senha);
+                let usuario = await UsuarioService.buscarUsuarioPorEmail(email);
+                for (let i in usuario) {
+                    idUsuarioAux = usuario[i].idUsuario;
+                }
+                if (idUsuarioAux) {
+                    let feriado = await FeriadosService.buscarTodos();
+                    let codTipo = 0;
+
+                    let tipoEvento = await TipoEventoService.buscarTodos();
+
+                    for (let i in tipoEvento) {
+                        if (tipoEvento[i].codTipo === 1) {  //1 - feriado
+                            codTipo = tipoEvento[i].codTipo;
+                        }
+                    }
+
+                    if (codTipo) {
+                        for (let i in feriado) {
+                            await EventoService.inserir(idUsuarioAux, feriado[i].data, feriado[i].data, codTipo);
+                        }
+                    }
+                }
+
+                json.items = {
+                    idUsuario,
+                    nomeUsuario,
+                    email,
+                    tipoPerfil,
+                    senha
+                };
+
+                const nodemailer = require('nodemailer');
+                const transporter = nodemailer.createTransport({
+                    service: 'Gmail',
+                    auth: {
+                        user: 'folgaferiastotvs@gmail.com',
+                        pass: 'lnadbmnrsyfijmzk',                    
+                    }
+                    // auth: {
+                    //     user: 'marcodalacort@gmail.com',
+                    //     pass: 'rshwumnrstmjoiog'
+                    // }
+                    
+                });            
+                const mailOptions = {
+                    from: 'folgaferiastotvs@gmail.com',
+                    to: email,
+                    subject: 'Usuário criado no Sistema Férias e Folgas',
+                    html: `
+                        <p>Prezado(a) ${nomeUsuario},</p>
+                        <p>Você agora está registrado no Férias e Folgas Totvs.</p>
+                        <p>Sua nova senha temporária é: <span style="font-size: 18px; font-weight: bold;">${senha}</span>.</p>
+                        <p>Use esta senha temporária para acessar sua conta.<p> 
+                        <p>Recomendamos que você faça login imediatamente e altere sua senha depois de entrar na sua conta.</p>
+                        <p>Atenciosamente,<br>A Equipe do Férias e Folgas Totvs.</p>
+                        `,
+                };
+                
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        console.log('Erro ao enviar o e-mail: ' + error);
+                        json.mailError = 'Erro ao enviar o e-mail: Contate o Administrador e informe que envio de email falhou.';
+                    } else {
+                        console.log('E-mail enviado com sucesso: ' + info.response);                    
+                    }
+
+                    res.json(json);
+
+                });
+
+            } else {
+                json.error = 'Campos não enviados';
+                res.json(json);
+            }
+        }            
     },
 
     alterar: async (req, res) => {
