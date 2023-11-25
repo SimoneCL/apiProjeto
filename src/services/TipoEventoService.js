@@ -5,7 +5,7 @@ module.exports = {
     buscarTodos: () => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('SELECT * FROM tipoEventos', (error, items) => {
+            db.query('SELECT * FROM tipoEventos ORDER BY descTipoEvento', (error, items) => {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });
@@ -13,7 +13,7 @@ module.exports = {
     },
     buscarPorDescTipoEvento: (descTipoEvento) => {
         return new Promise((aceito, rejeitado) => {
-            db.query(`SELECT * FROM tipoEventos WHERE descTipoEvento like '%${descTipoEvento}%'`, (error, items) => {
+            db.query(`SELECT * FROM tipoEventos WHERE descTipoEvento like '%${descTipoEvento}%' ORDER BY descTipoEvento`, (error, items) => {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });

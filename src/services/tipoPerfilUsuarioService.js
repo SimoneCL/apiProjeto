@@ -5,7 +5,7 @@ module.exports = {
     buscarTodos: () => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('SELECT * FROM perfilusuario', (error, items) => {
+            db.query('SELECT * FROM perfilusuario ORDER BY descricaoPerfil', (error, items) => {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });
@@ -34,7 +34,7 @@ module.exports = {
     },
     buscarDescricaoPerfil: (descricaoPerfil) => {
         return new Promise((aceito, rejeitado) => {
-            db.query('SELECT * FROM perfilusuario WHERE descricaoPerfil = ?', [descricaoPerfil], (error, items) => {
+            db.query('SELECT * FROM perfilusuario WHERE descricaoPerfil = ? ORDER BY descricaoPerfil', [descricaoPerfil], (error, items) => {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });

@@ -6,7 +6,8 @@ const EventoFeriadosService = require('../services/eventoFeriadosService')
 module.exports = {
     buscarTodos: async (req, res) => {
         let json = { error: '', items: [] };
-        if (req.query.descricao) {
+        
+        if (req.query.dataInicial === undefined && req.query.dataFinal === undefined && req.query.descricao) {
             let feriado = await FeriadosService.buscarPorDescricao(req.query.descricao);
             for (let i in feriado) {
                 json.items.push({
@@ -20,9 +21,11 @@ module.exports = {
             }
             res.json(json);
         } else {
-
-            if (req.query.dataInicial && req.query.dataFinal) {
-                let feriado = await FeriadosService.buscarAvancada(req.query.dataInicial, req.query.dataFinal);
+            let dataInicial = req.query.dataInicial;
+            let dataFinal = req.query.dataFinal;
+            let descricao = req.query.descricao;
+           
+                let feriado = await FeriadosService.buscarAvancada(dataInicial, dataFinal,descricao);
                 for (let i in feriado) {
                     json.items.push({
                         idFeriado: feriado[i].idFeriado,
@@ -33,19 +36,8 @@ module.exports = {
 
                     });
                 }
-            } else {
-                let feriado = await FeriadosService.buscarTodos();
-                for (let i in feriado) {
-                    json.items.push({
-                        idFeriado: feriado[i].idFeriado,
-                        data: feriado[i].data,
-                        descricao: feriado[i].descricao,
-                        tipoFeriado: feriado[i].tipoFeriado,
-                        pontoFacultativo: feriado[i].pontoFacultativo
-
-                    });
-                }
-            }
+            
+         
 
             res.json(json);
         }
@@ -176,7 +168,8 @@ module.exports = {
                     "detailedMessage": `Já existe a descrição  ${descricao} para outra data`
                 });
             } else {
-                if (idFeriado && data && descricao && tipoFeriado && pontoFacultativo) {
+                
+                if (idFeriado && data && descricao && tipoFeriado && pontoFacultativo != null) {
                     await FeriadosService.alterar(idFeriado, data, descricao, tipoFeriado, pontoFacultativo);
                     json.items = {
                         idFeriado,

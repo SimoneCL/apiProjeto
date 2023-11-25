@@ -61,110 +61,49 @@ module.exports = {
         });
     },
     buscarPorIdUsuario: (idUsuario, dataInicial, dataFinal, descricao, codTipo) => {
-        if (descricao === undefined) {
-            descricao = '';
-        }
-
+        
         return new Promise((aceito, rejeitado) => {
-            if (dataInicial && dataFinal &&  descricao != '') {
-                
-                db.query(`select evento.idEvento,usuario.idUsuario,usuario.nomeUsuario, evento.dataEventoIni,evento.dataEventoFim, ifnull(feriados.descricao,tipoEventos.descTipoEvento) descricao,tipoEventos.codTipo, tipoEventos.descTipoEvento 
-                            from usuario
-                            INNER join evento
-                            on evento.idUsuario =  usuario.idUsuario
-                            and evento.dataEventoIni between ('${dataInicial}') and ('${dataFinal}')
-                            and  evento.dataEventoFim between ('${dataInicial}') and ('${dataFinal}')
-                            and  evento.codTipo in (${codTipo})
-                            LEFT join feriados
-                            on feriados.data between evento.dataEventoIni and evento.dataEventoFim
-                            LEFT join tipoEventos
-                            on tipoEventos.codTipo = evento.codTipo
-                            where usuario.idUsuario = ${idUsuario}
-                            and ifnull(feriados.descricao,tipoEventos.descTipoEvento) like '%${descricao}%'
-                            order by evento.dataEventoIni`
-                    , (error, items) => {
-                        if (error) { rejeitado(error); return; }
-                        aceito(items);
-                    });
-            } else {
-                if (dataInicial && descricao != '') {
-                    db.query(`select evento.idEvento,usuario.idUsuario,usuario.nomeUsuario, evento.dataEventoIni,evento.dataEventoFim, ifnull(feriados.descricao,tipoEventos.descTipoEvento) descricao,tipoEventos.codTipo, tipoEventos.descTipoEvento 
+            let consultaSql = `select evento.idEvento,usuario.idUsuario,usuario.nomeUsuario, evento.dataEventoIni,evento.dataEventoFim, ifnull(feriados.descricao,tipoEventos.descTipoEvento) descricao,tipoEventos.codTipo, tipoEventos.descTipoEvento 
                                 from usuario
                                 INNER join evento
-                                on evento.idUsuario =  usuario.idUsuario
-                                and evento.dataEventoIni >= ('${dataInicial}')
-                                and  evento.codTipo in (${codTipo})
-                                LEFT join feriados
-                                on feriados.data between evento.dataEventoIni and evento.dataEventoFim
-                                LEFT join tipoEventos
-                                on tipoEventos.codTipo = evento.codTipo
-                                where usuario.idUsuario in (${idUsuario})
-                                and ifnull(feriados.descricao,tipoEventos.descTipoEvento) like '%${descricao}%'
-                                order by evento.dataEventoIni`
-                        , (error, items) => {
-                            if (error) { rejeitado(error); return; }
-                            aceito(items);
-                        });
-                } else {
-                    if (dataFinal && descricao != '') {
-                        db.query(`select evento.idEvento,usuario.idUsuario,usuario.nomeUsuario, evento.dataEventoIni,evento.dataEventoFim, ifnull(feriados.descricao,tipoEventos.descTipoEvento) descricao,tipoEventos.codTipo, tipoEventos.descTipoEvento 
-                                    from usuario
-                                    INNER join evento
-                                    on evento.idUsuario =  usuario.idUsuario
-                                    and  evento.codTipo in (${codTipo})
-                                    and evento.dataEventoIni <= ('${dataFinal}')
-                                
-                                    LEFT join feriados
-                                    on feriados.data between evento.dataEventoIni and evento.dataEventoFim
-                                    LEFT join tipoEventos
-                                    on tipoEventos.codTipo = evento.codTipo
-                                    where usuario.idUsuario in (${idUsuario})
-                                    and ifnull(feriados.descricao,tipoEventos.descTipoEvento) like '%${descricao}%'
-                                    order by evento.dataEventoIni`
-                            , (error, items) => {
-                                if (error) { rejeitado(error); return; }
-                                aceito(items);
-                            });
-                    } else {
-                        if (descricao != '') {
-                            db.query(`select evento.idEvento,usuario.idUsuario,usuario.nomeUsuario, evento.dataEventoIni,evento.dataEventoFim, ifnull(feriados.descricao,tipoEventos.descTipoEvento) descricao,tipoEventos.codTipo, tipoEventos.descTipoEvento 
-                            from usuario
-                            INNER join evento
-                            on evento.idUsuario =  usuario.idUsuario
-                            and  evento.codTipo in (${codTipo})
-                            LEFT join feriados
-                            on feriados.data between evento.dataEventoIni and evento.dataEventoFim
-                            LEFT join tipoEventos
-                            on tipoEventos.codTipo = evento.codTipo
-                            where usuario.idUsuario in (${idUsuario})
-                            and ifnull(feriados.descricao,tipoEventos.descTipoEvento) like '%${descricao}%'
-                            order by evento.dataEventoIni`
-                                , (error, items) => {
-                                    if (error) { rejeitado(error); return; }
-                                    aceito(items);
-                                });
-                        } else {
-                            db.query(`select evento.idEvento,usuario.idUsuario,usuario.nomeUsuario, evento.dataEventoIni,evento.dataEventoFim, ifnull(feriados.descricao,tipoEventos.descTipoEvento) descricao,tipoEventos.codTipo, tipoEventos.descTipoEvento 
-                            from usuario
-                            INNER join evento
-                            on evento.idUsuario =  usuario.idUsuario
-                            and  evento.codTipo in (${codTipo})
-                            LEFT join feriados
-                            on feriados.data between evento.dataEventoIni and evento.dataEventoFim
-                            LEFT join tipoEventos
-                            on tipoEventos.codTipo = evento.codTipo
-                            where usuario.idUsuario = ${idUsuario}
-                            order by evento.dataEventoIni`
-                                , (error, items) => {
-                                    if (error) { rejeitado(error); return; }
-                                    aceito(items);
-                                });
-                        }
-                    }
+                                on evento.idUsuario =  usuario.idUsuario`;
+
+            
+            if (dataInicial !== undefined && dataFinal !== undefined) {
+                consultaSql += ` and evento.dataEventoIni between ('${dataInicial}') and ('${dataFinal}') 
+                                 and  evento.dataEventoFim between ('${dataInicial}') and ('${dataFinal}')`;
+            } else {
+                if (dataInicial !== undefined) {
+                    consultaSql += ` and evento.dataEventoIni >= ('${dataInicial}')`;
                 }
+                if (dataFinal !== undefined) {
+                    consultaSql += ` and evento.dataEventoIni <= ('${dataFinal}')`;
+                }
+            }
+
+            if (codTipo !== undefined) {
+                consultaSql += ` and  evento.codTipo in (${codTipo})`;
 
             }
 
+            consultaSql += ` LEFT join feriados
+                            on feriados.data between evento.dataEventoIni and evento.dataEventoFim
+                            LEFT join tipoEventos
+                            on tipoEventos.codTipo = evento.codTipo`;
+            if (idUsuario !== undefined) {
+                consultaSql += ` where usuario.idUsuario = ${idUsuario}`;
+            }
+
+            if (descricao !== undefined) {
+                consultaSql += ` and ifnull(feriados.descricao,tipoEventos.descTipoEvento) like '%${descricao}%'`;
+            }
+            consultaSql += ` order by evento.dataEventoIni`;
+            
+            db.query(consultaSql,
+                (error, items) => {
+                    if (error) { rejeitado(error); return; }
+                    aceito(items);
+                });
         });
     },
 
