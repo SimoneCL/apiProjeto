@@ -12,7 +12,8 @@ module.exports = {
                         ON equipeUsuario.idUsuario = usuario.idUsuario
                         left join equipes
                         on equipes.codEquipe = equipeusuario.codEquipe
-                        GROUP BY usuario.idUsuario`, (error, items) => {
+                        GROUP BY usuario.idUsuario
+                        ORDER BY nomeUsuario`, (error, items) => {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });
@@ -44,7 +45,8 @@ module.exports = {
             left join equipes
             on equipes.codEquipe = equipeusuario.codEquipe
             WHERE nomeUsuario like '%${nomeUsuario}%'
-            GROUP BY usuario.idUsuario `, (error, items) => {
+            GROUP BY usuario.idUsuario 
+            ORDER BY nomeUsuario`, (error, items) => {
                 if (error) { rejeitado(error); return; }
                 if (items.length > 0) {
                     aceito(items);

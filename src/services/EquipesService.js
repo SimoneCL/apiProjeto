@@ -11,7 +11,8 @@ module.exports = {
                         ON equipeUsuario.codEquipe = equipes.codEquipe
                         left join usuario
                         on usuario.idUsuario = equipeusuario.idUsuario
-                        GROUP BY equipes.codEquipe`, (error, items) => {
+                        GROUP BY equipes.codEquipe
+                        ORDER BY equipes.descEquipe`, (error, items) => {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });
@@ -40,10 +41,6 @@ module.exports = {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });
-            // db.query(`SELECT * FROM equipes WHERE descEquipe like '%${descEquipe}%'`, (error, items) => {
-            //     if (error) { rejeitado(error); return; }
-            //     aceito(items);
-            // });
         });
     },
     buscarDescricaoEquipe: (descEquipe) => {

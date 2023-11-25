@@ -2,7 +2,7 @@ const db = require('../db');
 
 // para fazer validações tive que instalar o express-validator (npm install --save express-validator)
 module.exports = {
-    buscarTodos: () => {
+    buscarTodos: () => {  //utilizado na inclusão do usuário para inserir todos feriados para o usuário
         return new Promise((aceito, rejeitado) => {
 
             db.query('SELECT * FROM feriados ORDER BY data', (error, items) => {
@@ -11,13 +11,31 @@ module.exports = {
             });
         });
     },
-    buscarAvancada: (dataInicial, dataFinal) => {
+    buscarAvancada: (dataInicial, dataFinal,descricao) => {
         return new Promise((aceito, rejeitado) => {
+            let consultaSql = `SELECT * FROM feriados `;
+
             
-            db.query(`SELECT * FROM feriados WHERE data between ('${dataInicial}') and ('${dataFinal}') ORDER BY data`, (error, items) => {
+            if (dataInicial !== undefined && dataFinal !== undefined) {
+                consultaSql += ` WHERE data between ('${dataInicial}') and ('${dataFinal}') `;
+            } else {
+                if (dataInicial !== undefined) {
+                    consultaSql += ` WHERE data >= ('${dataInicial}')`;
+                }
+                if (dataFinal !== undefined) {
+                    consultaSql += ` WHERE data <= ('${dataFinal}')`;
+                }
+            }
+            if(descricao !== undefined) {
+                consultaSql += ` and descricao like '%${descricao}%'`;
+            }
+            consultaSql += ` ORDER BY data`;
+
+            db.query( consultaSql , (error, items) => {
                 if (error) { rejeitado(error); return; }
                 aceito(items);
             });
+            
         });
     },
     buscarPorDescricao: (descricao) => {
