@@ -26,7 +26,14 @@ module.exports = {
     buscarUm: (idEvento) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('SELECT * FROM evento WHERE idEvento = ?', [idEvento], (error, items) => {
+
+            db.query(`select evento.idEvento,evento.dataEventoIni, evento.dataEventoFim, evento.idUsuario,evento.codTipo, ifnull(feriados.descricao,tipoEventos.descTipoEvento) descricao
+                        from  evento
+                        LEFT join feriados
+                        on feriados.data between evento.dataEventoIni and evento.dataEventoFim
+                        LEFT join tipoEventos
+                        on tipoEventos.codTipo = evento.codTipo
+                        where  evento.idEvento =  ${idEvento}`, (error, items) => {
                 if (error) { rejeitado(error); return; }
                 if (items.length > 0) {
                     aceito(items[0]);
@@ -87,8 +94,9 @@ module.exports = {
             }
 
             consultaSql += ` LEFT join feriados
-                            on feriados.data between evento.dataEventoIni and evento.dataEventoFim
-                            LEFT join tipoEventos
+                             ON feriados.data = evento.dataEventoIni
+                            AND feriados.data = evento.dataEventoFim
+                            inner join tipoEventos
                             on tipoEventos.codTipo = evento.codTipo`;
             if (idUsuario !== undefined) {
                 consultaSql += ` where usuario.idUsuario = ${idUsuario}`;
@@ -98,7 +106,6 @@ module.exports = {
                 consultaSql += ` and ifnull(feriados.descricao,tipoEventos.descTipoEvento) like '%${descricao}%'`;
             }
             consultaSql += ` order by evento.dataEventoIni`;
-            
             db.query(consultaSql,
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
