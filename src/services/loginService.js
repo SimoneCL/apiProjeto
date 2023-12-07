@@ -16,7 +16,10 @@ module.exports = {
     buscarUm: (userEmail, senha) => {
         return new Promise((aceito, rejeitado) => {
             senha = hashSenha.gerarSenha(atob(senha));
-            db.query('SELECT * FROM usuario WHERE email = ? AND senha = ?', [userEmail, senha], 
+            db.query('SELECT * FROM usuario ' + 
+                    ' inner join perfilusuario ' +
+                    ' on perfilusuario.idTipoPerfil = usuario.tipoPerfil ' +
+                    ' WHERE email = ? AND senha = ? ', [userEmail, senha], 
                 (error, items) => {
                                                 
                 if (error) { rejeitado(error); return; }

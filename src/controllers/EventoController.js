@@ -1,5 +1,6 @@
 const EventoService = require('../services/EventoService');
 const TipoEventoService = require('../services/TipoEventoService');
+
 module.exports = {
     buscarTodos: async (req, res) => {
         let json = { error: '', items: [] };
@@ -83,26 +84,45 @@ module.exports = {
         }
         res.json(json);
     },
+   
     inserir: async (req, res) => {
         let json = { error: '', items: {} };
         let idUsuario = req.body.idUsuario;
         let dataEventoIni = req.body.dataEventoIni;
         let dataEventoFim = req.body.dataEventoFim;
         let codTipo = req.body.codTipo;
-        if (idUsuario && dataEventoIni && dataEventoFim && codTipo) {
-            await EventoService.inserir(idUsuario, dataEventoIni, dataEventoFim, codTipo);
 
-            json.items = {
-                idUsuario,
-                dataEventoIni,
-                dataEventoFim,
-                codTipo
-            };
+
+        if (idUsuario && dataEventoIni && dataEventoFim && codTipo) {
+            let evento = await EventoService.buscarPorDataExata(idUsuario, dataEventoIni, dataEventoFim);
+            if (evento.length > 0) {
+                res.status(500).json({
+                    "codTipo": "1",
+                    "type": "error",
+                    "message": `Usuário já possui evento nesse período`,
+                    "detailedMessage": `Usuário já possui evento cadastrado nesse período, não será possível inserir este evento`
+                });
+
+            } else {
+
+                await EventoService.inserir(idUsuario, dataEventoIni, dataEventoFim, codTipo);
+
+                json.items = {
+                    idUsuario,
+                    dataEventoIni,
+                    dataEventoFim,
+                    codTipo
+                };
+                res.json(json);
+            }
+
+
 
         } else {
             json.error = 'Campos não enviados';
+            res.json(json);
         }
-        res.json(json);
+      
 
 
     },

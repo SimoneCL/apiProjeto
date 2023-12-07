@@ -48,16 +48,29 @@ module.exports = {
         let idUsuario = req.body.idUsuario;
         let codEquipe = req.body.codEquipe;
         if (idUsuario && codEquipe) {
-            await EquipeUsuarioService.inserir(idUsuario, codEquipe);
+            let equipeUsuario = await EquipeUsuarioService.buscarUm(idUsuario,codEquipe);
+            if(equipeUsuario) {
+                
+                res.status(201).json({
+                    "data": "1",
+                    "type": "error",
+                    "message": `Usuário já relacionado`
+                });
+            } else {
+                await EquipeUsuarioService.inserir(idUsuario, codEquipe);
 
-            json.items = {
-                idUsuario,codEquipe
-            };
+                json.items = {
+                    idUsuario,codEquipe
+                };
+                res.json(json);
+            }
+            
          
         } else {
             json.error = 'Campos não enviados';
+            res.json(json);
         }
-        res.json(json);
+       
 
     },
 

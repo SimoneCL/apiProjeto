@@ -47,6 +47,21 @@ module.exports = {
         });
 
     },
+    buscarUm: (idUsuario, codEquipe) => {
+        return new Promise((aceito, rejeitado) => {
+
+            db.query('SELECT * FROM equipeUsuario WHERE idUsuario = ? and codEquipe = ? ', [idUsuario,codEquipe], (error, items) => {
+                if (error) { rejeitado(error); return; }
+
+                if (items.length > 0) {
+                    aceito(items[0]);
+                } else {
+                    aceito(false);
+                }
+            });
+        });
+
+    },
 
     inserir: (idUsuario, codEquipe) => {
         return new Promise((aceito, rejeitado) => {
