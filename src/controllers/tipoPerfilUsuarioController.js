@@ -8,7 +8,7 @@ module.exports = {
                 json.items.push({
                     idTipoPerfil: tipoPerfilUsuario[i].idTipoPerfil,
                     descricaoPerfil: tipoPerfilUsuario[i].descricaoPerfil,
-                    gestor: tipoPerfilUsuario[i].gestor
+                    gestorPessoas: tipoPerfilUsuario[i].gestorPessoas
                 });
             }
             res.json(json);
@@ -18,7 +18,7 @@ module.exports = {
                 json.items.push({
                     idTipoPerfil: tipoPerfilUsuario[i].idTipoPerfil,
                     descricaoPerfil: tipoPerfilUsuario[i].descricaoPerfil,
-                    gestor: tipoPerfilUsuario[i].gestor
+                    gestorPessoas: tipoPerfilUsuario[i].gestorPessoas
                 });
             }
             res.json(json);
@@ -39,6 +39,7 @@ module.exports = {
         let json = { error: '', items: {} };
         let idTipoPerfil = req.body.idTipoPerfil;
         let descricaoPerfil = req.body.descricaoPerfil;
+        let gestorPessoas = req.body.gestorPessoas;
 
         let tipoPerfil = await tipoPerfilUsuarioService.buscarUm(idTipoPerfil);
         if (tipoPerfil) {
@@ -68,7 +69,7 @@ module.exports = {
 
 
                 if (descricaoPerfil) {
-                    await tipoPerfilUsuarioService.inserir(descricaoPerfil);
+                    await tipoPerfilUsuarioService.inserir(descricaoPerfil,gestorPessoas);
 
                     json.items = {
                         idTipoPerfil,
@@ -88,7 +89,8 @@ module.exports = {
 
         let idTipoPerfil = req.body.idTipoPerfil;
         let descricaoPerfil = req.body.descricaoPerfil;
-        let tipoPerfil = await tipoPerfilUsuarioService.alterar(idTipoPerfil, descricaoPerfil);
+        let gestorPessoas = req.body.gestorPessoas;
+        let tipoPerfil = await tipoPerfilUsuarioService.alterar(idTipoPerfil, descricaoPerfil,gestorPessoas);
 
         if (tipoPerfil.length > 0) {
             json = tipoPerfil;

@@ -21,8 +21,8 @@ module.exports = {
     },
     buscarUm: (codTipo) => {
         return new Promise((aceito, rejeitado) => {
-
-            db.query('SELECT * FROM tipoEventos WHERE codTipo = ?', [codTipo], (error, items) => {
+            db.query(`SELECT *, EXISTS (SELECT ${codTipo} FROM evento WHERE evento.codTipo =  tipoeventos.codtipo ) as 'possuiEvento'
+                      FROM tipoEventos WHERE codTipo = ${codTipo}`, (error, items) => {
                 if (error) { rejeitado(error); return; }
                 if (items.length > 0) {
                     aceito(items[0]);
@@ -48,11 +48,11 @@ module.exports = {
         });
     },
 
-    inserir: (codTipo, descTipoEvento) => {
+    inserir: (descTipoEvento,faixaData) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('INSERT INTO tipoEventos (descTipoEvento) VALUES (?)',
-                [descTipoEvento],
+            db.query('INSERT INTO tipoEventos (descTipoEvento,faixaData) VALUES (?,?)',
+                [descTipoEvento,faixaData],
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
                     aceito(items.insertcodTipo);
@@ -61,11 +61,11 @@ module.exports = {
         });
     },
 
-    alterar: (codTipo, descTipoEvento) => {
+    alterar: (codTipo, descTipoEvento,faixaData) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('UPDATE tipoEventos SET descTipoEvento = ? WHERE codTipo = ?',
-                [descTipoEvento, codTipo],
+            db.query('UPDATE tipoEventos SET descTipoEvento = ?, faixaData = ? WHERE codTipo = ?',
+                [descTipoEvento,faixaData, codTipo],
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
                     aceito(items);

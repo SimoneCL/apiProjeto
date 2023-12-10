@@ -8,7 +8,8 @@ module.exports = {
             for (let i in tipoEvento) {
                 json.items.push({
                     codTipo: tipoEvento[i].codTipo,
-                    descTipoEvento: tipoEvento[i].descTipoEvento
+                    descTipoEvento: tipoEvento[i].descTipoEvento,
+                    faixaData: tipoEvento[i].faixaData
                 });
             }
             res.json(json);
@@ -18,7 +19,8 @@ module.exports = {
             for (let i in tipoEvento) {
                 json.items.push({
                     codTipo: tipoEvento[i].codTipo,
-                    descTipoEvento: tipoEvento[i].descTipoEvento
+                    descTipoEvento: tipoEvento[i].descTipoEvento,
+                    faixaData: tipoEvento[i].faixaData
                 });
             }
             res.json(json);
@@ -27,11 +29,11 @@ module.exports = {
     },
 
     buscarUm: async (req, res) => {
-        let json = { error: '', items: {} };
+        let json = {};
         let codTipo = req.params.codTipo;
         let tipoevento = await TipoEventoService.buscarUm(codTipo);
         if (tipoevento) {
-            json.items = tipoevento;
+            json = tipoevento;
         }
         res.json(json);
     },
@@ -39,45 +41,37 @@ module.exports = {
         let json = { error: '', items: {} };
         let codTipo = req.body.codTipo;
         let descTipoEvento = req.body.descTipoEvento;
-        let tipoevento = await TipoEventoService.buscarUm(codTipo);
+        let faixaData = req.body.faixaData
 
-        if (tipoevento != false) {
+        let tipoEvento = await TipoEventoService.buscarPorDescTipoEvento(descTipoEvento);
+        if (tipoEvento != false) {
+            for (const i in tipoEvento) {
+                codTipo = tipoEvento[i].codTipo;
+            }
 
             res.status(500).json({
-                "codTipo": "1",
+                "data": "1",
                 "type": "error",
-                "message": `Código ${codTipo} do tipo de evento já cadastrado `,
-                "detailedMessage": `Código ${codTipo} do tipo de evento já cadastrado `
+                "message": `Já existe a descrição  ${descTipoEvento} para o código de equipe ${codTipo}`,
+                "detailedMessage": `Já existe a descrição  ${descTipoEvento} para o código de equipe ${codTipo}`
             });
         } else {
-            let tipoEvento = await TipoEventoService.buscarPorDescTipoEvento(descTipoEvento);
-            if (tipoEvento != false) {
-                for (const i in tipoEvento) {
-                    codTipo = tipoEvento[i].codTipo;
-                }
+            if (descTipoEvento) {
+                await TipoEventoService.inserir(descTipoEvento, faixaData);
 
-                res.status(500).json({
-                    "data": "1",
-                    "type": "error",
-                    "message": `Já existe a descrição  ${descTipoEvento} para o código de equipe ${codTipo}`,
-                    "detailedMessage": `Já existe a descrição  ${descTipoEvento} para o código de equipe ${codTipo}`
-                });
+                json.items = {
+                    codTipo,
+                    descTipoEvento,
+                    faixaData
+                };
+
             } else {
-                if (descTipoEvento) {
-                    await TipoEventoService.inserir(codTipo, descTipoEvento);
-
-                    json.items = {
-                        codTipo,
-                        descTipoEvento
-                    };
-
-                } else {
-                    json.error = 'Campos não enviados';
-                }
-                res.json(json);
-
+                json.error = 'Campos não enviados';
             }
+            res.json(json);
+
         }
+
 
 
     },
@@ -87,86 +81,63 @@ module.exports = {
 
         let codTipo = req.params.codTipo;
         let descTipoEvento = req.body.descTipoEvento;
-        if (req.params.codTipo == 1 || req.params.codTipo == 2 || req.params.codTipo == 3 || req.params.codTipo == 4) {
-            res.status(500).json({
-                "data": "1",
-                "type": "error",
-                "message": 'Tipo evento obrigatório.',
-                "detailedMessage": `Tipo evento obrigatório e não pode ser alterado.`
-            });
-        } else {
+        let faixaData = req.body.faixaData;
 
-            let tipoEvento = await TipoEventoService.buscarPorDescTipoEvento(descTipoEvento);
-            if (tipoEvento) {
-                for (const i in tipoEvento) {
-                    codTipo = tipoEvento[i].codTipo;
-                }
+        let tipoEvento = await TipoEventoService.buscarPorDescTipoEvento(descTipoEvento);
+        if (tipoEvento) {
+            for (const i in tipoEvento) {
+                codTipo = tipoEvento[i].codTipo;
+            }
 
-                if (codTipo != req.params.codTipo) {
-                    res.status(500).json({
-                        "data": "1",
-                        "type": "error",
-                        "message": `Já existe a descrição  ${descTipoEvento} para o código de equipe ${codTipo}`,
-                        "detailedMessage": `Já existe a descrição  ${descTipoEvento} para o código de equipe ${codTipo}`
-                    });
-                } else {
-                    await TipoEventoService.alterar(codTipo, descTipoEvento,);
-                    json.items = {
-                        codTipo,
-                        descTipoEvento
-                    };
-                    res.json(json);
-                }
-
+            if (codTipo != req.params.codTipo) {
+                res.status(500).json({
+                    "data": "1",
+                    "type": "error",
+                    "message": `Já existe a descrição  ${descTipoEvento} para o código de equipe ${codTipo}`,
+                    "detailedMessage": `Já existe a descrição  ${descTipoEvento} para o código de equipe ${codTipo}`
+                });
             } else {
-
-                if (codTipo && descTipoEvento) {
-                    await TipoEventoService.alterar(codTipo, descTipoEvento,);
-                    json.items = {
-                        codTipo,
-                        descTipoEvento
-                    };
-                } else {
-                    json.error = 'Campos não enviados';
-                }
+                await TipoEventoService.alterar(codTipo, descTipoEvento, faixaData);
+                json.items = {
+                    codTipo,
+                    descTipoEvento,
+                    faixaData
+                };
                 res.json(json);
             }
 
+        } else {
+
+            if (codTipo && descTipoEvento) {
+                await TipoEventoService.alterar(codTipo, descTipoEvento, faixaData);
+                json.items = {
+                    codTipo,
+                    descTipoEvento,
+                    faixaData
+                };
+            } else {
+                json.error = 'Campos não enviados';
+            }
+            res.json(json);
         }
-
-
-
     },
 
     excluir: async (req, res) => {
         let json = { error: '', items: {} };
-        console.log(' req.params.codTipo', req.params.codTipo)
-        if (req.params.codTipo == 1 || req.params.codTipo == 2 || req.params.codTipo == 3 || req.params.codTipo == 4) {
+
+        let tipoEvento = await TipoEventoService.buscarEventoCodTipo(req.params.codTipo);
+        if (tipoEvento.length > 0) {
             res.status(500).json({
                 "data": "1",
                 "type": "error",
-                "message": 'Tipo evento obrigatório.',
-                "detailedMessage": `Tipo evento obrigatório e não pode ser eliminado.`
+                "message": 'Tipo evento não poderá ser eliminado.',
+                "detailedMessage": `Tipo evento não poderá ser eliminado,possui relacionamento com evento de algum usuário.`
             });
+
         } else {
-            let tipoEvento = await TipoEventoService.buscarEventoCodTipo(req.params.codTipo);
-            if (tipoEvento.length > 0) {
-                res.status(500).json({
-                    "data": "1",
-                    "type": "error",
-                    "message": 'Tipo evento não poderá ser eliminado, existe evento relacionado.',
-                    "detailedMessage": `Tipo evento não poderá ser eliminado,existe evento relacionado.`
-                });
+            await TipoEventoService.excluir(req.params.codTipo);
 
-            } else {
-                await TipoEventoService.excluir(req.params.codTipo);
-
-                res.json(json);
-            }
-
+            res.json(json);
         }
-
-
-
     }
 }

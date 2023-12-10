@@ -23,6 +23,18 @@ module.exports = {
             });
         });
     },
+    buscarPorDataExata: (idUsuario, dataEventoIni, dataEventoFim) => {
+        return new Promise((aceito, rejeitado) => {
+            db.query(`SELECT * FROM evento 
+                      where evento.idUsuario = ${idUsuario}
+                      and   evento.dataEventoIni = ('${dataEventoIni}')
+                      and   evento.dataEventoFim = ('${dataEventoFim}')	
+                      ORDER BY dataEventoIni `, (error, items) => {
+                if (error) { rejeitado(error); return; }
+                aceito(items);
+            });
+        });
+    },
     buscarUm: (idEvento) => {
         return new Promise((aceito, rejeitado) => {
 
@@ -60,7 +72,7 @@ module.exports = {
                         on usuario.idUsuario = equipeusuario.idUsuario
                         LEFT join tipoEventos
                         on tipoEventos.codTipo = evento.codTipo
-                        order by evento.dataEventoIni`
+                        order by  usuario.nomeUsuario, evento.dataEventoIni`
                 , (error, items) => {
                     if (error) { rejeitado(error); return; }
                     aceito(items);
@@ -106,6 +118,7 @@ module.exports = {
                 consultaSql += ` and ifnull(feriados.descricao,tipoEventos.descTipoEvento) like '%${descricao}%'`;
             }
             consultaSql += ` order by evento.dataEventoIni`;
+            
             db.query(consultaSql,
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
