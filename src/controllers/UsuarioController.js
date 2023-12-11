@@ -156,7 +156,10 @@ module.exports = {
                     <p>Prezado(a) ${nomeUsuario},</p>
                     <p>Recebemos uma solicitação de recuperação de senha para a sua conta no Férias e Folgas Totvs.</p>
                     <p>Sua nova senha temporária é: <span style="font-size: 18px; font-weight: bold;">${senha}</span>.</p>
-                    <p>Use esta senha temporária para acessar sua conta.<p> 
+                    <p>Use esta senha temporária para acessar sua conta.<p>
+                    <p>Para acessar o app 
+                    <a href="http://feriasfolgas.jv01.local/geren-ferias-folgas/#/login"> clique aqui </a> 
+                    </p> 
                     <p>Recomendamos que você faça login imediatamente e altere sua senha depois de entrar na sua conta.</p>
                     <p>Atenciosamente,<br>A Equipe do Férias e Folgas Totvs.</p>
                     `,
@@ -267,11 +270,14 @@ module.exports = {
                     from: 'folgaferiastotvs@gmail.com',
                     to: email,
                     subject: 'Usuário criado no Sistema Férias e Folgas',
-                    html: `
+                    html: `                        
                         <p>Prezado(a) ${nomeUsuario},</p>
                         <p>Você agora está registrado no Férias e Folgas Totvs.</p>
                         <p>Sua nova senha temporária é: <span style="font-size: 18px; font-weight: bold;">${senha}</span>.</p>
                         <p>Use esta senha temporária para acessar sua conta.<p> 
+                        <p>Para acessar o app 
+                        <a href="http://feriasfolgas.jv01.local/geren-ferias-folgas/#/login"> clique aqui </a> 
+                        </p>
                         <p>Recomendamos que você faça login imediatamente e altere sua senha depois de entrar na sua conta.</p>
                         <p>Atenciosamente,<br>A Equipe do Férias e Folgas Totvs.</p>
                         `,
