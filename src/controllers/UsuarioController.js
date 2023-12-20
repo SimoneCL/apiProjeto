@@ -17,7 +17,8 @@ module.exports = {
                     nomeUsuario: usuario[i].nomeUsuario,
                     email: usuario[i].email,
                     tipoPerfil: usuario[i].tipoPerfil,
-                    senha: usuario[i].senha
+                    senha: usuario[i].senha,
+                    usuarioSubstituto: usuario[i].usuarioSubstituto
                 });
             }
             res.json(json);
@@ -38,6 +39,7 @@ module.exports = {
                         email: usuario[i].email,
                         tipoPerfil: usuario[i].tipoPerfil,
                         senha: usuario[i].senha,
+                        usuarioSubstituto: usuario[i].usuarioSubstituto,
                         detail: arrayDeObjetos
                     });
                 }
@@ -53,7 +55,8 @@ module.exports = {
                                 nomeUsuario: usuario[i].nomeUsuario,
                                 email: usuario[i].email,
                                 tipoPerfil: usuario[i].tipoPerfil,
-                                senha: usuario[i].senha
+                                senha: usuario[i].senha,
+                                usuarioSubstituto: usuario[i].usuarioSubstituto,
                             });
                         }
                     }
@@ -77,6 +80,7 @@ module.exports = {
                             email: usuario[i].email,
                             tipoPerfil: usuario[i].tipoPerfil,
                             senha: usuario[i].senha,
+                            usuarioSubstituto: usuario[i].usuarioSubstituto,
                             detail: arrayDeObjetos
                         });
 
@@ -147,7 +151,7 @@ module.exports = {
                 // }
                 
             });
-            console.log(email);
+            
             const mailOptions = {
                 from: 'folgaferiastotvs@gmail.com',
                 to: email,
@@ -178,21 +182,15 @@ module.exports = {
 
     buscarUsuariolookup: async (req, res) => {
 
-        let json = { error: '', items: [] };
-        let idUsuario = req.params.idUsuario;
-        let usuario = await UsuarioService.buscarUm(idUsuario);
+        let json = {  };
+        let nomeUsuario = req.params.nomeUsuario;
+        let usuario = await UsuarioService.buscarNomeUsuario(nomeUsuario);
 
         if (usuario) {
-
-            for (let i in usuario) {
-                json.items.push({
-                    idUsuario: usuario[i].idUsuario,
-                    nomeUsuario: usuario[i].nomeUsuario,
-                    email: usuario[i].email,
-                    tipoPerfil: usuario[i].tipoPerfil,
-                    senha: usuario[i].senha
-                });
-            }
+            json = {
+                idUsuario: usuario[0].idUsuario,
+                nomeUsuario: usuario[0].nomeUsuario,                
+            };            
         }
 
         res.json(json);
@@ -204,6 +202,7 @@ module.exports = {
         let nomeUsuario = req.body.nomeUsuario;
         let email = req.body.email;
         let tipoPerfil = req.body.tipoPerfil;
+        let usuarioSubstituto = req.body.usuarioSubstituto;
         //let senha = req.body.senha;
 
         let usuarioCadastrado = await UsuarioService.buscarUsuarioPorEmail(email);
@@ -250,7 +249,8 @@ module.exports = {
                     nomeUsuario,
                     email,
                     tipoPerfil,
-                    senha
+                    senha,
+                    usuarioSubstituto
                 };
 
                 const nodemailer = require('nodemailer');
@@ -309,14 +309,16 @@ module.exports = {
         let nomeUsuario = req.body.nomeUsuario;
         let email = req.body.email;
         let tipoPerfil = req.body.tipoPerfil;
+        let usuarioSubstituto = req.body.usuarioSubstituto;
 
         if (idUsuario && nomeUsuario && email && tipoPerfil) {
-            await UsuarioService.alterar(idUsuario, nomeUsuario, email, tipoPerfil);
+            await UsuarioService.alterar(idUsuario, nomeUsuario, email, tipoPerfil, usuarioSubstituto);
             json.items = {
                 idUsuario,
                 nomeUsuario,
                 email,
-                tipoPerfil
+                tipoPerfil,
+                usuarioSubstituto
             };
         } else {
             json.error = 'Campos não enviados';

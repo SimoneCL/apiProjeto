@@ -59,7 +59,7 @@ module.exports = {
     buscarEventosEquipeUsuario: (codEquipe, dataEventoIni, dataEventoFim) => {
 
         return new Promise((aceito, rejeitado) => {
-            db.query(`select usuario.idUsuario,usuario.nomeUsuario,equipeUsuario.codEquipe, equipes.descEquipe, evento.dataEventoIni,evento.dataEventoFim,tipoEventos.codTipo, tipoEventos.descTipoEvento 
+            db.query(`select usuario.idUsuario,usuario.nomeUsuario,usuario.usuarioSubstituto,equipeUsuario.codEquipe, equipes.descEquipe, evento.dataEventoIni,evento.dataEventoFim,tipoEventos.codTipo, tipoEventos.descTipoEvento 
                         from equipeUsuario 
                         LEFT join evento
                         on evento.idUsuario = equipeusuario.idUsuario
