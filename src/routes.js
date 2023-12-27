@@ -34,6 +34,7 @@ router.delete('/evento/:id', EventoController.excluir);
 const UsuarioController = require('./controllers/UsuarioController');
 router.get('/usuario',UsuarioController.buscarTodos);
 router.get('/usuario/buscarEmail/:email',UsuarioController.buscarEmail);
+router.get('/usuario/nome/:nomeUsuario/', UsuarioController.buscarUsuariolookup);
 router.get('/usuario/:idUsuario/:senha/', UsuarioController.comparaSenha);
 router.get('/usuario/:idUsuario',UsuarioController.buscarUm);
 router.post('/usuario', UsuarioController.inserir);

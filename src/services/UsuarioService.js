@@ -127,13 +127,12 @@ module.exports = {
         });
     },
 
-    inserir: (nomeUsuario, email, tipoPerfil, senha) => {
+    inserir: (nomeUsuario, email, tipoPerfil, senha, usuarioSubstituto) => {
         return new Promise((aceito, rejeitado) => {
             //Senha criada ao incluir usuário
-            console.log('userService',senha);
             senha = hashSenha.gerarSenha(senha);
-            db.query('INSERT INTO usuario (nomeUsuario, email,tipoPerfil, senha) VALUES (?,?,?,?)',
-                [nomeUsuario, email, tipoPerfil, senha],
+            db.query('INSERT INTO usuario (nomeUsuario, email,tipoPerfil, senha, usuarioSubstituto) VALUES (?,?,?,?,?)',
+                [nomeUsuario, email, tipoPerfil, senha, usuarioSubstituto],
                 (error, items) => {
 
                     if (error) { rejeitado(error); return; }
@@ -143,11 +142,11 @@ module.exports = {
         });
     },
 
-    alterar: (idUsuario, nomeUsuario, email, tipoPerfil) => {
+    alterar: (idUsuario, nomeUsuario, email, tipoPerfil, usuarioSubstituto) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('UPDATE usuario SET nomeUsuario = ?, email = ?, tipoPerfil = ?  WHERE idUsuario = ?',
-                [nomeUsuario, email, tipoPerfil, idUsuario],
+            db.query('UPDATE usuario SET nomeUsuario = ?, email = ?, tipoPerfil = ?, usuarioSubstituto = ?  WHERE idUsuario = ?',
+                [nomeUsuario, email, tipoPerfil, usuarioSubstituto, idUsuario],
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
                     aceito(items);
@@ -158,7 +157,6 @@ module.exports = {
 
     alterarSenhaAleatoria: (email,  senha) => {
         return new Promise((aceito, rejeitado) => {
-            console.log(senha);
             senha = hashSenha.gerarSenha(senha);
             db.query('UPDATE usuario SET senha = ?  WHERE email = ?', 
                 [senha, email],    

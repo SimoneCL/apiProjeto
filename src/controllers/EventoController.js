@@ -17,7 +17,8 @@ module.exports = {
                     dataEventoIni: evento[i].dataEventoIni,
                     dataEventoFim: evento[i].dataEventoFim,
                     codTipo: evento[i].codTipo,
-                    descTipoEvento: evento[i].descTipoEvento
+                    descTipoEvento: evento[i].descTipoEvento,
+                    usuarioSubstituto: evento[i].usuarioSubstituto
                 });
             }
         } else {
@@ -47,7 +48,8 @@ module.exports = {
                             dataEventoIni: evento[i].dataEventoIni,
                             dataEventoFim: evento[i].dataEventoFim,
                             codTipo: evento[i].codTipo,
-                            descricao: evento[i].descricao
+                            descricao: evento[i].descricao,
+                            usuarioSubstituto: evento[i].usuarioSubstituto
 
 
                         });
