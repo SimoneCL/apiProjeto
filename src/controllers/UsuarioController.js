@@ -157,7 +157,7 @@ module.exports = {
                     <p>Sua nova senha temporária é: <span style="font-size: 18px; font-weight: bold;">${senha}</span>.</p>
                     <p>Use esta senha temporária para acessar sua conta.<p>
                     <p>Para acessar o app 
-                    <a href="http://feriasfolgas.jv01.local/geren-ferias-folgas/#/login"> clique aqui </a> 
+                    <a href="http://feriasfolgas.sp01.local/geren-ferias-folgas/#/login"> clique aqui </a> 
                     </p> 
                     <p>Recomendamos que você faça login imediatamente e altere sua senha depois de entrar na sua conta.</p>
                     <p>Atenciosamente,<br>A Equipe do Férias e Folgas Totvs.</p>
@@ -266,7 +266,7 @@ module.exports = {
                         <p>Sua nova senha temporária é: <span style="font-size: 18px; font-weight: bold;">${senha}</span>.</p>
                         <p>Use esta senha temporária para acessar sua conta.<p> 
                         <p>Para acessar o app 
-                        <a href="http://feriasfolgas.jv01.local/geren-ferias-folgas/#/login"> clique aqui </a> 
+                        <a href="http://feriasfolgas.sp01.local/geren-ferias-folgas/#/login"> clique aqui </a> 
                         </p>
                         <p>Recomendamos que você faça login imediatamente e altere sua senha depois de entrar na sua conta.</p>
                         <p>Atenciosamente,<br>A Equipe do Férias e Folgas Totvs.</p>
