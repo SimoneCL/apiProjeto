@@ -1,3 +1,5 @@
+
+const agrupaEvento = require('../agrupaEvento');
 const EventoService = require('../services/EventoService');
 const TipoEventoService = require('../services/TipoEventoService');
 
@@ -7,20 +9,54 @@ module.exports = {
         let evento;
         if (req.query.codEquipe) {
             evento = await EventoService.buscarEventosEquipeUsuario(req.query.codEquipe, req.query.dataEventoIni, req.query.dataEventoFim);
-
+            let quantityOfDaysSchedule = 0;
+            let dataCalc = new Date();
+            let primeiroDia = new Date();
+            let ultimoDia = new Date();
+            let itemsAux = {};
+            let newEvent = {};
+            let eventos = [];
             for (let i in evento) {
-                json.items.push({
-                    idUsuario: evento[i].idUsuario,
-                    nomeUsuario: evento[i].nomeUsuario,
-                    codEquipe: evento[i].codEquipe,
-                    descEquipe: evento[i].descEquipe,
-                    dataEventoIni: evento[i].dataEventoIni,
-                    dataEventoFim: evento[i].dataEventoFim,
-                    codTipo: evento[i].codTipo,
-                    descTipoEvento: evento[i].descTipoEvento,
-                    usuarioSubstituto: evento[i].usuarioSubstituto
-                });
+
+                let map1 = new Map();
+                map1.set('idUsuario', evento[i].idUsuario);
+                primeiroDia = new Date(evento[i].dataEventoIni);
+
+                const end = new Date(evento[i].dataEventoFim);
+                ultimoDia = new Date(end.getFullYear(), end.getMonth(), end.getDate() + 1)
+
+                quantityOfDaysSchedule = Math.floor(
+                    (Date.UTC(ultimoDia.getFullYear(), ultimoDia.getMonth(), ultimoDia.getDate()) -
+                        Date.UTC(primeiroDia.getFullYear(), primeiroDia.getMonth(), primeiroDia.getDate())) /
+                    (1000 * 60 * 60 * 24)
+                );
+                dataCalc = new Date();
+
+                for (let y = 0; y <= quantityOfDaysSchedule; y++) {
+                    dataCalc = new Date(primeiroDia.getFullYear(), primeiroDia.getMonth(), (primeiroDia.getDate()) + y);
+
+                    map1.set(agrupaEvento.formatoProperty(dataCalc), evento[i].descTipoEvento);
+
+
+                    itemsAux = [...map1];
+                    if (newEvent[itemsAux[0][0]] !== itemsAux[0][1]) {
+                        newEvent = {};
+                    }
+                    if (itemsAux[y][1] !== null){
+                    newEvent[itemsAux[0][0]] = itemsAux[0][1];
+                    newEvent[itemsAux[y][0]] = itemsAux[y][1];
+                    }
+                    newEvent['nomeUsuario'] = evento[i].nomeUsuario;
+
+                    if (evento[i].usuarioSubstituto != null || evento[i].usuarioSubstituto != undefined) {
+                        newEvent['detail'] = [{ usuarioSubstituto: evento[i].usuarioSubstituto }];
+                    }
+                }
+                eventos.push(newEvent);
             }
+            agrupado = agrupaEvento.agrupByUser(eventos);
+
+            json.items = agrupado;
         } else {
             if (req.query.idUsuario) {
                 let descricao = req.query.descricao;
