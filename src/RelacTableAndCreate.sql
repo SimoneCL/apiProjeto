@@ -164,6 +164,29 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
+-- -----------------------------------------------------
+-- Table `dbapieventos`.`substitutos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `dbapieventos`.`substitutos` (
+  `usuario_id` INT NOT NULL,
+  `substituto_id` INT NOT NULL,
+  INDEX `usuario_id` (`usuario_id` ASC) VISIBLE,
+  INDEX `substituto_id` (`substituto_id` ASC) VISIBLE,
+  PRIMARY KEY (`substituto_id`),
+  UNIQUE INDEX `substituto_id_UNIQUE` (`substituto_id` ASC) VISIBLE,
+  CONSTRAINT `substitutos_ibfk_1`
+    FOREIGN KEY (`usuario_id`)
+    REFERENCES `dbapieventos`.`usuario` (`idUsuario`)
+    ON DELETE RESTRICT,
+  CONSTRAINT `substitutos_ibfk_2`
+    FOREIGN KEY (`substituto_id`)
+    REFERENCES `dbapieventos`.`usuario` (`idUsuario`)
+    ON DELETE CASCADE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 8
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

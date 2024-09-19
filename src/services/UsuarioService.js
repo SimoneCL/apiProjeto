@@ -142,11 +142,11 @@ module.exports = {
         });
     },
 
-    alterar: (idUsuario, nomeUsuario, email, tipoPerfil, usuarioSubstituto) => {
+    alterar: (idUsuario, nomeUsuario, email, tipoPerfil) => {
         return new Promise((aceito, rejeitado) => {
 
-            db.query('UPDATE usuario SET nomeUsuario = ?, email = ?, tipoPerfil = ?, usuarioSubstituto = ?  WHERE idUsuario = ?',
-                [nomeUsuario, email, tipoPerfil, usuarioSubstituto, idUsuario],
+            db.query('UPDATE usuario SET nomeUsuario = ?, email = ?, tipoPerfil = ?  WHERE idUsuario = ?',
+                [nomeUsuario, email, tipoPerfil, idUsuario],
                 (error, items) => {
                     if (error) { rejeitado(error); return; }
                     aceito(items);

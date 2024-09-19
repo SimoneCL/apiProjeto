@@ -2,6 +2,7 @@
 const agrupaEvento = require('../agrupaEvento');
 const EventoService = require('../services/EventoService');
 const TipoEventoService = require('../services/TipoEventoService');
+const UsuarioSubstitutosService = require('../services/UsuarioSubstitutosService')
 
 module.exports = {
     buscarTodos: async (req, res) => {
@@ -16,8 +17,8 @@ module.exports = {
             let itemsAux = {};
             let newEvent = {};
             let eventos = [];
+            let listaSubstituto = [];
             for (let i in evento) {
-
                 let map1 = new Map();
                 map1.set('idUsuario', evento[i].idUsuario);
                 primeiroDia = new Date(evento[i].dataEventoIni);
@@ -42,19 +43,28 @@ module.exports = {
                     if (newEvent[itemsAux[0][0]] !== itemsAux[0][1]) {
                         newEvent = {};
                     }
-                    if (itemsAux[y][1] !== null){
-                    newEvent[itemsAux[0][0]] = itemsAux[0][1];
-                    newEvent[itemsAux[y][0]] = itemsAux[y][1];
+                    if (itemsAux[y][1] !== null) {
+                        newEvent[itemsAux[0][0]] = itemsAux[0][1];
+                        newEvent[itemsAux[y][0]] = itemsAux[y][1];
                     }
                     newEvent['nomeUsuario'] = evento[i].nomeUsuario;
-
-                    if (evento[i].usuarioSubstituto != null || evento[i].usuarioSubstituto != undefined) {
-                        newEvent['detail'] = [{ usuarioSubstituto: evento[i].usuarioSubstituto }];
-                    }
                 }
                 eventos.push(newEvent);
             }
             agrupado = agrupaEvento.agrupByUser(eventos);
+
+            for (let a in agrupado) {
+                let substitutos = await UsuarioSubstitutosService.buscarUsuarioSubstitutos(agrupado[a].idUsuario);
+                listaSubstituto = [];
+                for (let s in substitutos) {
+                    if (substitutos[s].usuario_id === agrupado[a].idUsuario) {
+                        listaSubstituto[s] = { usuarioSubstituto: substitutos[s].nomeUsuario };
+                    }
+                }
+                agrupado[a].detail = listaSubstituto;
+
+            }
+
 
             json.items = agrupado;
         } else {
@@ -122,7 +132,7 @@ module.exports = {
         }
         res.json(json);
     },
-   
+
     inserir: async (req, res) => {
         let json = { error: '', items: {} };
         let idUsuario = req.body.idUsuario;
@@ -160,7 +170,7 @@ module.exports = {
             json.error = 'Campos não enviados';
             res.json(json);
         }
-      
+
 
 
     },
