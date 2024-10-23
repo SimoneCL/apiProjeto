@@ -41,7 +41,11 @@ router.post('/usuario', UsuarioController.inserir);
 router.put('/usuario/:idUsuario', UsuarioController.alterar);
 router.put('/usuario/alterarSenha/:idUsuario/:senha', UsuarioController.alterarSenha);
 router.delete('/usuario/:idUsuario', UsuarioController.excluir);
-//module.exports = router;
+
+const UsuarioSubstitutosController = require('./controllers/UsuarioSubstitutosController');
+router.get('/substitutos',UsuarioSubstitutosController.buscarTodos);
+router.post('/substitutos',UsuarioSubstitutosController.inserir);
+router.delete('/substitutos/:idSubstituto',UsuarioSubstitutosController.excluir);
 
 const EquipeUsuarioController = require('./controllers/EquipeUsuarioController');
 router.get('/equipeUsuario',EquipeUsuarioController.buscarTodos);

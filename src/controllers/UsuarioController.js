@@ -4,10 +4,14 @@ const FeriadosService = require('../services/FeriadosService');
 const EventoService = require('../services/EventoService');
 const EquipesService = require('../services/EquipesService');
 const EquipeUsuarioService = require('../services/EquipeUsuarioService');
+const UsuarioSubstitutosService = require('../services/UsuarioSubstitutosService')
+
+
 module.exports = {
     buscarTodos: async (req, res) => {
         let json = { items: [], error: '' };
         let detail = [];
+        
         if (req.query.codEquipe && req.query.nomeUsuario) {
 
             let usuario = await UsuarioService.buscarUsuariodaEquipe(req.query.codEquipe, req.query.nomeUsuario);
@@ -25,7 +29,7 @@ module.exports = {
         } else {
 
             if (req.query.nomeUsuario) {
-                let usuario = await UsuarioService.buscarPorNomeUsuario(req.query.nomeUsuario);
+                 let usuario = await UsuarioService.buscarPorNomeUsuario(req.query.nomeUsuario);
                 for (let i in usuario) {
                     
                     let arrayDeObjetos = [];
@@ -48,7 +52,7 @@ module.exports = {
                 if (req.query.idUsuario) {
                     let usuario = await UsuarioService.buscarUm(req.query.idUsuario);
                     if (usuario) {
-
+                       
                         for (let i in usuario) {
                             json.items.push({
                                 idUsuario: usuario[i].idUsuario,
@@ -65,7 +69,7 @@ module.exports = {
                 }
                 else {
                     let usuario = await UsuarioService.buscarTodos();
-
+                    
                     for (let i in usuario) {
 
                         let arrayDeObjetos = [];
@@ -98,8 +102,9 @@ module.exports = {
 
         let json = {};
         let idUsuario = req.params.idUsuario;
+        let substitutos = [];
         let usuario = await UsuarioService.buscarUm(idUsuario);
-
+       
         if (usuario) {
             json = usuario;
         }
@@ -300,9 +305,8 @@ module.exports = {
         let email = req.body.email;
         let tipoPerfil = req.body.tipoPerfil;
         let usuarioSubstituto = req.body.usuarioSubstituto;
-
         if (idUsuario && nomeUsuario && email && tipoPerfil) {
-            await UsuarioService.alterar(idUsuario, nomeUsuario, email, tipoPerfil, usuarioSubstituto);
+            await UsuarioService.alterar(idUsuario, nomeUsuario, email, tipoPerfil);
             json.items = {
                 idUsuario,
                 nomeUsuario,
@@ -337,6 +341,7 @@ module.exports = {
     excluir: async (req, res) => {
         let json = { error: '', items: {} };
         let equipeUsuario = await EquipeUsuarioService.buscarEquipesUsuario(req.params.idUsuario);
+        let substitutos = await UsuarioSubstitutosService.buscarUsuarioSubstitutos(req.params.idUsuario);
         if (equipeUsuario.length > 0 ) {
             res.status(500).json({
                 "data": "1",
@@ -346,10 +351,21 @@ module.exports = {
             });
 
         } else {
-            await EventoService.excluirEventoDoUsuario(req.params.idUsuario);
-            await UsuarioService.excluir(req.params.idUsuario);
-
-            res.json(json);
+            if(substitutos.length > 0 ){
+                res.status(500).json({
+                    "data": "1",
+                    "type": "error",
+                    "message": 'Usuário não poderá ser eliminado.',
+                    "detailedMessage": 'A exclusão do usuário não será possível, possui usuário substituto relacionado.'
+                });
+    
+            } else {
+                await EventoService.excluirEventoDoUsuario(req.params.idUsuario);
+                await UsuarioService.excluir(req.params.idUsuario);
+    
+                res.json(json);
+            }
+           
         }
     }
 }
